@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Casa Gama</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET + VARS ──────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --cl:#f8f4ef;   /* brand light */
+  --cd:#6b6844;   /* brand dark  */
+  --cdk:#4e4e30;
+  --cream:#f2ece2;
+  --warm:#faf8f4;
+  --brd:#e0d9ce;
+  --esp:#2e2b1a;
+  --terra:#9b5e3c;
+  --txt:#2c1f14;
+  --txm:#6b5744;
+  --txl:#a09080;
+  --r:0px; /* border-radius base */
+}
+html{scroll-behavior:smooth;}
+body{background:var(--warm);color:var(--txt);font-family:'Jost',sans-serif;font-weight:300;font-size:14px;overflow-x:hidden;}
+
+/* ── ADMIN PANEL (hidden, opened via secret URL hash) ─── */
+#adm{display:none;min-height:100vh;background:var(--cream);}
+#adm.open{display:block;}
+
+/* admin header */
+.ah{background:var(--esp);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.ab-logo{display:flex;align-items:center;gap:10px;}
+.ab-logo img{max-height:32px;max-width:130px;object-fit:contain;filter:brightness(10);display:none;}
+.ab-txt{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cl);font-weight:300;letter-spacing:.1em;}
+.ab-sub{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;font-family:'Jost',sans-serif;}
+.an{display:flex;gap:4px;flex-wrap:wrap;}
+.an button{background:transparent;border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.7);padding:6px 14px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+.an button.active,.an button:hover{background:var(--cd);border-color:var(--cd);color:#fff;}
+.ac{padding:24px 20px;max-width:960px;}
+.as-sec{display:none;}
+.as-sec.active{display:block;}
+.a-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--esp);margin-bottom:2px;}
+.a-sub{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--txl);margin-bottom:20px;}
+.badd{background:var(--esp);color:var(--cl);border:none;padding:10px 18px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;margin-bottom:18px;display:inline-block;}
+.badd:hover{background:var(--cd);}
+
+/* admin table */
+.at{width:100%;border-collapse:collapse;background:var(--warm);font-size:12px;}
+.at th{text-align:left;padding:10px 12px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--txl);border-bottom:1px solid var(--brd);font-weight:400;}
+.at td{padding:11px 12px;border-bottom:1px solid var(--brd);vertical-align:middle;}
+.at tr:hover td{background:var(--cl);}
+.sb{display:inline-block;padding:2px 8px;font-size:8px;letter-spacing:.06em;text-transform:uppercase;}
+.sok{background:#eaf0e8;color:#3b6820;}.slow{background:#fdf0e4;color:#8b5a1a;}.sout,.sna{background:#f5e8e8;color:#8b2020;}.sav{background:#eaf0e8;color:#3b6820;}
+.be,.bd,.bt{border:none;padding:4px 9px;font-family:'Jost',sans-serif;font-size:8px;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;}
+.be{background:var(--cream);color:var(--esp);}.bd{background:#f5e8e8;color:#8b2020;margin-left:2px;}.bt{background:var(--cream);color:var(--txm);margin-left:2px;}
+
+/* forms */
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.fl{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--txl);}
+.fi,.fsel,.fta{border:1px solid var(--brd);background:var(--warm);padding:10px 12px;font-family:'Jost',sans-serif;font-size:13px;color:var(--txt);outline:none;width:100%;}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--cd);}
+.fta{resize:vertical;min-height:64px;}
+.fgr{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fgr .full{grid-column:1/-1;}
+.mov{display:none;position:fixed;inset:0;background:rgba(30,28,18,.75);z-index:1000;align-items:center;justify-content:center;}
+.mov.open{display:flex;}
+.mb{background:var(--warm);padding:28px 24px;width:94%;max-width:540px;max-height:90vh;overflow-y:auto;}
+.mt{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:2px;color:var(--esp);}
+.ms{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--txl);margin-bottom:18px;}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+.bsv{background:var(--cd);color:#fff;border:none;padding:10px 22px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+.bcl{background:transparent;color:var(--txm);border:1px solid var(--brd);padding:10px 22px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+
+/* settings */
+.sc{background:var(--warm);padding:20px;margin-bottom:12px;border-left:2px solid var(--cd);}
+.sc h3{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;margin-bottom:2px;color:var(--esp);}
+.sc p{font-size:11px;color:var(--txl);margin-bottom:14px;line-height:1.6;}
+.lup{border:2px dashed var(--brd);padding:20px;text-align:center;cursor:pointer;background:var(--cream);margin-bottom:12px;}
+.lup:hover{border-color:var(--cd);}
+.lup img{max-height:48px;max-width:180px;object-fit:contain;margin:6px auto;display:block;}
+.lup p{font-size:11px;color:var(--txl);}
+.lup input[type=file]{display:none;}
+.pmr{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;border:1px solid var(--brd);background:var(--cream);flex-wrap:wrap;}
+.pmr input{min-width:0;}
+
+/* ── STORE FRONT ────────────────────────────── */
+#store{display:block;}
+
+/* HEADER — mobile first */
+.sh{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;transition:background .3s;}
+.sh.scr{background:rgba(250,248,244,.97);border-bottom:1px solid var(--brd);}
+.lw{display:flex;align-items:center;gap:8px;}
+.lw img#sli{max-height:36px;max-width:140px;object-fit:contain;display:none;}
+.stl{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:var(--esp);letter-spacing:.12em;text-transform:uppercase;line-height:1.1;}
+.stl-sub{display:block;font-family:'Jost',sans-serif;font-size:8px;letter-spacing:.24em;color:var(--txl);font-weight:300;}
+.hright{display:flex;align-items:center;gap:10px;}
+.cart-btn{background:transparent;border:1px solid var(--brd);padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txm);position:relative;}
+.cart-btn:hover{border-color:var(--cd);color:var(--cd);}
+.cc{background:var(--cd);color:#fff;border-radius:50%;width:17px;height:17px;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:500;}
+
+/* HERO — mobile first */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:80px 18px 40px;position:relative;overflow:hidden;background:var(--cream);}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(145deg,#ede7db 0%,var(--cream) 60%,var(--cl) 100%);}
+.hc{position:relative;z-index:1;width:100%;}
+.htag{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--txl);margin-bottom:14px;}
+.htit{font-family:'Cormorant Garamond',serif;font-size:clamp(62px,17vw,130px);font-weight:300;line-height:.88;color:var(--esp);margin-bottom:28px;}
+.htit em{font-style:italic;color:var(--cd);}
+.hdesc{font-size:13px;line-height:1.85;color:var(--txm);margin-bottom:16px;max-width:300px;}
+.hcta{border-bottom:1px solid var(--txt);padding-bottom:2px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;color:var(--txt);display:inline-block;}
+.hcta:hover{color:var(--cd);border-color:var(--cd);}
+.hstats{display:flex;gap:28px;margin-top:28px;}
+.hst strong{display:block;font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--esp);}
+.hst span{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--txl);}
+
+/* CATEGORY STRIP */
+.cs{background:var(--esp);display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;}
+.cs::-webkit-scrollbar{display:none;}
+.cb{background:transparent;border:none;border-right:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.42);font-family:'Jost',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;padding:14px 20px;white-space:nowrap;position:relative;flex-shrink:0;}
+.cb:hover{color:rgba(255,255,255,.82);}
+.cb.active{color:#fff;}
+.cb.active::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:2px;background:var(--cd);}
+
+/* PRODUCTS — mobile first, 2 cols */
+.ps{padding:32px 16px 48px;}
+.shr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px;}
+.sti{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--esp);}
+.pcl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txl);}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* PRODUCT CARD */
+.pc{cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.pi{aspect-ratio:3/4;background:var(--cl);overflow:hidden;position:relative;margin-bottom:12px;}
+.pi img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+.pi-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;}
+.pi-ph svg{opacity:.17;}
+.pi-ph span{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txl);opacity:.6;}
+.pc:hover .pi img{transform:scale(1.04);}
+/* produto indisponível — permanece visível com overlay */
+.uov{position:absolute;inset:0;background:rgba(248,244,239,.68);display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.uov span{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);background:var(--warm);padding:5px 12px;border:1px solid var(--brd);}
+.pc.unavail{cursor:pointer;opacity:.88;}
+.pc.unavail .ppr{color:var(--txl);}
+
+/* links sociais — minimalistas */
+.social-bar{display:flex;align-items:center;gap:18px;}
+.social-link{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.5);text-decoration:none;font-size:9px;letter-spacing:.14em;text-transform:uppercase;transition:color .2s;}
+.social-link:hover{color:rgba(255,255,255,.9);}
+.social-link svg{opacity:.7;transition:opacity .2s;}
+.social-link:hover svg{opacity:1;}
+.pcode{font-size:8px;letter-spacing:.14em;color:var(--txl);margin-bottom:2px;}
+.pnm{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--esp);margin-bottom:2px;line-height:1.2;}
+.pctg{font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:var(--txl);margin-bottom:6px;}
+.pplbl{font-size:8px;letter-spacing:.09em;color:var(--txl);text-transform:uppercase;display:block;margin-bottom:1px;}
+.ppr{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--esp);}
+
+/* CART DRAWER — slides from bottom on mobile */
+#cart-overlay{display:none;position:fixed;inset:0;background:rgba(30,28,18,.4);z-index:599;}
+#cart-overlay.open{display:block;}
+#cart-drawer{position:fixed;bottom:-100%;left:0;right:0;height:88vh;background:var(--warm);z-index:600;transition:bottom .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:18px 18px 0 0;box-shadow:0 -4px 32px rgba(30,28,18,.14);}
+#cart-drawer.open{bottom:0;}
+.cd-handle{width:40px;height:4px;background:var(--brd);border-radius:2px;margin:12px auto 0;}
+.cd-hdr{padding:16px 20px 12px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;}
+.cd-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--esp);}
+.cd-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--txm);line-height:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.cd-body{flex:1;overflow-y:auto;padding:16px 20px;}
+.cd-empty{text-align:center;padding:48px 0;}
+.cd-empty p{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--txl);}
+.cd-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--brd);}
+.cdi-img{width:60px;height:78px;background:var(--cl);flex-shrink:0;overflow:hidden;}
+.cdi-img img{width:100%;height:100%;object-fit:cover;}
+.cdi-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.cdi-info{flex:1;min-width:0;}
+.cdi-code{font-size:8px;letter-spacing:.12em;color:var(--txl);margin-bottom:1px;}
+.cdi-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;color:var(--esp);margin-bottom:2px;line-height:1.2;}
+.cdi-cat{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--txl);margin-bottom:6px;}
+.cdi-bottom{display:flex;align-items:center;justify-content:space-between;}
+.cdi-price{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--esp);}
+.cd-qty{display:flex;align-items:center;gap:6px;}
+.cd-qty button{background:var(--cream);border:1px solid var(--brd);width:24px;height:24px;cursor:pointer;font-size:14px;color:var(--txm);display:flex;align-items:center;justify-content:center;line-height:1;}
+.cd-qty span{font-size:13px;min-width:18px;text-align:center;}
+.cdi-rm{background:none;border:none;cursor:pointer;color:var(--txl);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:0;display:block;margin-top:4px;}
+.cdi-rm:hover{color:var(--terra);}
+
+/* CART FOOTER */
+.cd-foot{padding:14px 20px;border-top:1px solid var(--brd);}
+.cd-pay-lbl{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--txl);margin-bottom:8px;}
+.po{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--brd);margin-bottom:6px;cursor:pointer;}
+.po.sel{border-color:var(--cd);background:rgba(107,104,68,.04);}
+.po input[type=radio]{accent-color:var(--cd);}
+.po-nm{font-size:13px;color:var(--txt);}
+.po-mod{font-size:10px;color:var(--txl);}
+.po-mod.disc{color:#3b6820;}.po-mod.sur{color:var(--terra);}
+.cd-gift-row{display:flex;align-items:center;gap:8px;cursor:pointer;margin:10px 0 6px;}
+.cd-gift-row input[type=checkbox]{accent-color:var(--cd);width:15px;height:15px;}
+.cd-gift-lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txm);}
+.cd-gift-msg{display:none;margin-bottom:8px;}
+.cd-gift-msg.open{display:block;}
+.cd-gift-msg textarea{width:100%;border:1px solid var(--brd);background:var(--warm);padding:10px;font-family:'Jost',sans-serif;font-size:13px;color:var(--txt);outline:none;resize:none;height:60px;}
+.cd-gift-msg textarea:focus{border-color:var(--cd);}
+.cd-gift-note{font-size:10px;color:var(--txl);margin-top:4px;}
+.cd-total-row{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 4px;}
+.cd-total-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txl);}
+.cd-total-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--esp);}
+.cd-mod{font-size:10px;color:var(--cd);margin-bottom:10px;}
+.bchk{background:var(--cd);color:#fff;border:none;padding:15px;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.bchk:hover{background:var(--cdk);}
+.bchk:disabled{opacity:.38;cursor:not-allowed;}
+
+/* PRODUCT BOTTOM SHEET (mobile-first) */
+.pbs-overlay{display:none;position:fixed;inset:0;background:rgba(30,28,18,.55);z-index:400;}
+.pbs-overlay.open{display:block;}
+.pbs{position:fixed;bottom:-100%;left:0;right:0;max-height:88vh;background:var(--warm);z-index:401;transition:bottom .35s cubic-bezier(.4,0,.2,1);border-radius:18px 18px 0 0;overflow-y:auto;}
+.pbs.open{bottom:0;}
+.pbs-handle{width:40px;height:4px;background:var(--brd);border-radius:2px;margin:12px auto 0;}
+.pbs-inner{padding:16px 20px 32px;}
+.pbs-img{width:100%;aspect-ratio:4/3;background:var(--cl);overflow:hidden;margin-bottom:16px;position:relative;}
+.pbs-img img{width:100%;height:100%;object-fit:cover;}
+.pbs-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
+.pbs-img-ph svg{opacity:.14;}
+.pbs-img-ph span{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txl);}
+.pbs-close{position:absolute;top:10px;right:10px;background:var(--warm);border:none;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--txm);display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.pbs-code{font-size:8px;letter-spacing:.2em;color:var(--txl);text-transform:uppercase;margin-bottom:4px;}
+.pbs-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--esp);line-height:1.05;margin-bottom:4px;}
+.pbs-cat{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--txl);margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--brd);}
+.pbs-pr-lbl{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--txl);margin-bottom:2px;}
+.pbs-pr{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--esp);margin-bottom:2px;}
+.pbs-calc{font-size:10px;color:var(--cd);margin-bottom:20px;}
+.pbs-stock{display:none;}
+.badd-cart{background:var(--cd);color:#fff;border:none;padding:15px;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.badd-cart:hover{background:var(--cdk);}
+.badd-cart:disabled{opacity:.38;cursor:not-allowed;}
+
+/* FOOTER */
+.sf{background:var(--esp);padding:40px 18px 24px;}
+.fi2{display:flex;flex-direction:column;gap:28px;}
+.fb img{max-height:36px;max-width:160px;object-fit:contain;filter:brightness(10);display:block;margin-bottom:12px;}
+.fb .ftxt{font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;font-weight:300;letter-spacing:.12em;margin-bottom:10px;display:block;}
+.fb p{font-size:11px;line-height:1.85;color:rgba(255,255,255,.38);}
+.fc h4{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-bottom:10px;}
+.fc p{font-size:11px;color:rgba(255,255,255,.52);line-height:1.85;}
+.fbt{padding:16px 18px;background:var(--esp);border-top:1px solid rgba(255,255,255,.07);text-align:center;}
+.fbt p{font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.22);}
+
+/* MISC */
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;}
+.empty p{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--txl);}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--esp);color:#fff;padding:12px 20px;font-size:11px;letter-spacing:.1em;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;border-radius:2px;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* TABLET / DESKTOP enhancements */
+@media(min-width:600px){
+  .pg{grid-template-columns:repeat(3,1fr);}
+  .ps{padding:40px 32px 64px;}
+  .sh{padding:18px 32px;}
+  .hero{padding:100px 32px 56px;}
+  #cart-drawer{bottom:auto;top:0;right:-420px;left:auto;width:420px;height:100vh;border-radius:0;transition:right .35s cubic-bezier(.4,0,.2,1);}
+  #cart-drawer.open{right:0;bottom:auto;}
+  .pbs{max-height:92vh;}
+  .sf{padding:56px 48px 32px;}
+  .fi2{flex-direction:row;gap:56px;}
+  .fi2>*{flex:1;}
+  .fbt{padding:20px 48px;}
+}
+@media(min-width:960px){
+  .pg{grid-template-columns:repeat(4,1fr);}
+  .ps{padding:56px 48px 80px;}
+  .sh{padding:18px 48px;}
+  .hero{padding:100px 48px 60px;}
+}
+
+/* ── WHATSAPP FAB ── */
+.wpp-fab{
+  position:fixed;
+  bottom:24px;
+  right:20px;
+  width:52px;
+  height:52px;
+  background:#6b6844;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:900;
+  box-shadow:0 4px 18px rgba(107,104,68,.38);
+  transition:transform .2s ease, box-shadow .2s ease;
+  text-decoration:none;
+  border:none;
+  outline:none;
+}
+.wpp-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(107,104,68,.5);}
+.wpp-fab svg{width:28px;height:28px;fill:#fff;}
+@media(min-width:600px){.wpp-fab{bottom:32px;right:28px;width:56px;height:56px;} .wpp-fab svg{width:30px;height:30px;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     PAINEL ADMIN (acesso via URL #gestao-privado)
+     Nunca aparece na loja pública
+══════════════════════════════════════════ -->
+<div id="adm">
+  <div class="ah">
+    <div class="ab-logo">
+      <img id="ali">
+      <div><div class="ab-txt" id="atn">Casa Gama</div><span class="ab-sub">Painel de gestão</span></div>
+    </div>
+    <div class="an">
+      <button class="active" onclick="showSec('products',this)">Produtos</button>
+      <button onclick="showSec('categories',this)">Categorias</button>
+      <button onclick="showSec('settings',this)">Configurações</button>
+      <button onclick="showSec('publicacao',this)">Publicação</button>
+      <button onclick="showSec('export',this)">Exportar</button>
+      <button onclick="closeAdmin()" style="border-color:rgba(255,255,255,.32);">← Loja</button>
+    </div>
+  </div>
+  <div class="ac">
+
+    <!-- PRODUTOS -->
+    <div class="as-sec active" id="sec-products">
+      <div class="a-title">Produtos</div>
+      <div class="a-sub">Gerencie o estoque completo</div>
+      <button class="badd" onclick="openPF()">+ Adicionar produto</button>
+      <div style="overflow-x:auto;">
+        <table class="at"><thead><tr><th>Código</th><th>Cod. Mart</th><th>Nome</th><th>Categoria</th><th>Estoque</th><th>Preço</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="atb"></tbody></table>
+      </div>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div class="as-sec" id="sec-categories">
+      <div class="a-title">Categorias</div>
+      <div class="a-sub">Gerencie as categorias da loja</div>
+      <button class="badd" onclick="openCF()">+ Nova categoria</button>
+      <table class="at"><thead><tr><th>Nome</th><th>Ações</th></tr></thead><tbody id="actb"></tbody></table>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div class="as-sec" id="sec-settings">
+      <div class="a-title">Configurações</div>
+      <div class="a-sub">Logo, loja, WhatsApp, pagamentos e acesso</div>
+
+      <div class="sc">
+        <h3>Logo da loja</h3>
+        <p>Faça upload do logo em PNG ou SVG. Aparecerá no topo da loja e no rodapé. Clique na área abaixo para selecionar o arquivo.</p>
+        <div class="lup" onclick="document.getElementById('lfi').click()">
+          <img id="lps"><p id="lph">Clique para fazer upload do logo (PNG, SVG, JPG)</p>
+          <input type="file" id="lfi" accept="image/*" onchange="uploadLogo(this)">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="bsv" onclick="saveSt('logo')">Confirmar logo</button>
+          <button class="bcl" onclick="removeLogo()">Remover logo</button>
+        </div>
+      </div>
+
+      <div class="sc">
+        <h3>Nome da loja</h3>
+        <p>Exibido quando não há logo e como título da aba do navegador.</p>
+        <div class="fg"><label class="fl">Nome</label><input class="fi" id="sni" value="Casa Gama"></div>
+        <button class="bsv" onclick="saveSt('storename')">Salvar</button>
+      </div>
+
+      <div class="sc">
+        <h3>Texto de destaque (hero)</h3>
+        <p>Frase exibida abaixo do título principal na página inicial.</p>
+        <div class="fg"><label class="fl">Descrição</label>
+        <textarea class="fta" id="hero-desc-input">Formas sculpturais. Detalhes com propósito. Objetos que transformam ambientes em experiências duradouras.</textarea></div>
+        <button class="bsv" onclick="saveSt('herodesc')">Salvar</button>
+      </div>
+
+      <div class="sc">
+        <h3>Links sociais</h3>
+        <p>Número do WhatsApp e @ do Instagram exibidos no rodapé da loja. O WhatsApp também recebe os pedidos.</p>
+        <div class="fg"><label class="fl">WhatsApp para pedidos e contato (DDI+DDD+número)</label><input class="fi" id="wi" value="5555996893350" type="tel"></div>
+        <div class="fg"><label class="fl">Instagram — URL completa</label><input class="fi" id="ig-url" placeholder="https://instagram.com/casagama"></div>
+        <button class="bsv" onclick="saveSt('social')">Salvar</button>
+      </div>
+
+      <div class="sc">
+        <h3>Formas de pagamento</h3>
+        <p>Cada método pode ter desconto (%) negativo ou acréscimo (%) positivo. Coloque 0 para sem alteração de preço.</p>
+        <div id="pmc"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <button class="badd" onclick="addPM()">+ Adicionar método</button>
+          <button class="bsv" onclick="saveSt('payments')">Salvar métodos</button>
+        </div>
+      </div>
+
+      <div class="sc">
+        <h3>Rodapé — informações de contato</h3>
+        <p>Texto exibido no rodapé da loja.</p>
+        <div class="fgr">
+          <div class="fg full"><label class="fl">Descrição da loja</label><textarea class="fta" id="footer-desc">Objetos de decoração selecionados com intenção. Cada peça conta uma história e transforma o espaço em algo singular.</textarea></div>
+          <div class="fg"><label class="fl">Horário de atendimento</label><input class="fi" id="footer-hours" value="Segunda a sexta, 09h às 18h"></div>
+          <div class="fg"><label class="fl">Localização</label><input class="fi" id="footer-loc" value="Quaraí, Rio Grande do Sul, Brasil"></div>
+        </div>
+        <button class="bsv" onclick="saveSt('footer')">Salvar rodapé</button>
+      </div>
+
+      <div class="sc">
+        <h3>Senha do painel</h3>
+        <p>A senha protege o acesso ao painel de gestão via URL secreta. Mínimo 8 caracteres.</p>
+        <div class="fgr">
+          <div class="fg"><label class="fl">Nova senha</label><input class="fi" id="npw" type="password" placeholder="Mínimo 8 caracteres"></div>
+          <div class="fg"><label class="fl">Confirmar senha</label><input class="fi" id="cpw" type="password" placeholder="Repita a senha"></div>
+        </div>
+        <button class="bsv" onclick="saveSt('password')">Salvar senha</button>
+      </div>
+
+      <div class="sc" style="border-color:#c0392b;">
+        <h3 style="color:#c0392b;">URL secreta do painel</h3>
+        <p>Esta é a URL que somente vocês devem conhecer para acessar o painel de gestão. O botão de gestão <strong>não aparece</strong> na loja pública. Guarde este link em local seguro.</p>
+        <div style="background:var(--cream);padding:12px 14px;font-size:12px;font-family:monospace;word-break:break-all;color:var(--esp);border:1px solid var(--brd);" id="secret-url-display"></div>
+        <button class="bsv" style="margin-top:10px;" onclick="copySecretUrl()">Copiar URL secreta</button>
+      </div>
+    </div>
+
+    <!-- PUBLICAÇÃO -->
+    <div class="as-sec" id="sec-publicacao">
+      <div class="a-title">Publicação e domínio</div>
+      <div class="a-sub">Passo a passo para colocar a loja no ar</div>
+
+      <div class="sc">
+        <h3>Etapa 1 — Publicar no Netlify (gratuito)</h3>
+        <p>O Netlify é onde a loja fica hospedada. É gratuito para o volume de uso da Casa Gama.</p>
+        <ol style="padding-left:18px;line-height:2.2;font-size:12px;color:var(--txm);">
+          <li>Acesse <strong>app.netlify.com</strong> e crie uma conta com e-mail e senha</li>
+          <li>Confirme o e-mail (chegará uma mensagem na sua caixa)</li>
+          <li>Clique em <strong>Add new site &gt; Deploy manually</strong></li>
+          <li>Renomeie o arquivo HTML recebido para <strong>index.html</strong></li>
+          <li>Arraste o arquivo <strong>index.html</strong> para a área indicada</li>
+          <li>O site publica em segundos com um link como: <code style="background:var(--cream);padding:1px 6px;font-size:11px;">nome-aleatorio.netlify.app</code></li>
+          <li>Para personalizar: <strong>Site configuration &gt; Site details &gt; Change site name</strong></li>
+        </ol>
+      </div>
+
+      <div class="sc" style="border-color:#c0392b;">
+        <h3>Etapa 2 — Comprar o domínio .com pelo Netlify</h3>
+        <p>Com o site publicado, compre um domínio próprio (ex: casagama.com) direto pelo Netlify. Tudo é configurado automaticamente — sem precisar mexer em DNS.</p>
+        <div style="background:var(--cream);padding:14px 16px;margin-bottom:14px;border-left:2px solid var(--cd);">
+          <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txl);margin-bottom:6px;">Custo estimado</div>
+          <div style="font-size:13px;color:var(--esp);line-height:1.9;">
+            Domínio <strong>.com</strong>: aproximadamente <strong>US$ 15/ano</strong> (~R$ 85–95/ano)<br>
+            Hospedagem no Netlify: <strong>gratuita</strong><br>
+            HTTPS (cadeado de segurança): <strong>incluso automaticamente</strong>
+          </div>
+        </div>
+        <ol style="padding-left:18px;line-height:2.4;font-size:12px;color:var(--txm);">
+          <li>Faça login em <strong>app.netlify.com</strong> e clique no seu site</li>
+          <li>No menu lateral esquerdo, clique em <strong>Domain management</strong></li>
+          <li>Clique em <strong>Add a domain</strong></li>
+          <li>Selecione <strong>Buy a new domain</strong></li>
+          <li>Digite o nome desejado (ex: <code style="background:var(--cream);padding:1px 5px;font-size:11px;">casagama</code>) e pressione Enter</li>
+          <li>O Netlify mostra a disponibilidade e o preço do <strong>.com</strong></li>
+          <li>Selecione o domínio <strong>.com</strong> e clique em <strong>Register domain</strong></li>
+          <li>Preencha o cartão de crédito internacional (Visa ou Mastercard) e confirme</li>
+          <li>O Netlify configura tudo: em até <strong>10 minutos</strong> o site já responde pelo novo endereço</li>
+        </ol>
+        <div style="background:#fff8f5;border:1px solid #f5c6b0;padding:12px 14px;margin-top:12px;font-size:11px;color:var(--txm);line-height:1.7;">
+          <strong>Dicas para escolher o nome:</strong><br>
+          Prefira nomes curtos e fáceis de falar. Se <em>casagama.com</em> estiver ocupado, tente <em>casagamadecor.com</em> ou <em>casagamabr.com</em>. Evite hífens e números.
+        </div>
+      </div>
+
+      <div class="sc">
+        <h3>Etapa 3 — Atualizar o site no futuro</h3>
+        <p>Toda vez que receber um novo arquivo HTML do Claude, basta:</p>
+        <ol style="padding-left:18px;line-height:2.2;font-size:12px;color:var(--txm);">
+          <li>Renomear o arquivo recebido para <strong>index.html</strong></li>
+          <li>Acessar <strong>app.netlify.com</strong> e entrar no seu site</li>
+          <li>Clicar em <strong>Deploys</strong> no menu lateral</li>
+          <li>Arrastar o novo <strong>index.html</strong> para a área de deploy</li>
+          <li>O site atualiza em segundos — domínio e dados permanecem intactos</li>
+        </ol>
+      </div>
+
+      <div class="sc">
+        <h3>URL secreta do painel (salve em local seguro)</h3>
+        <p>Esta URL dá acesso ao painel de gestão. Somente vocês devem ter este link.</p>
+        <div style="background:var(--cream);padding:12px 14px;font-size:12px;font-family:monospace;word-break:break-all;color:var(--esp);border:1px solid var(--brd);" id="pub-secret-url"></div>
+        <button class="bsv" style="margin-top:10px;" onclick="copySecretUrl()">Copiar URL secreta</button>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LOJA PÚBLICA
+══════════════════════════════════════════ -->
+<div id="store">
+  <header class="sh" id="sh">
+    <div class="lw">
+      <img id="sli" src="" alt="Casa Gama">
+      <div class="stl" id="stl">Casa Gama<span class="stl-sub">Curated Living</span></div>
+    </div>
+    <div class="hright">
+      <button class="cart-btn" onclick="openCart()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="cc" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hc">
+      <div class="htag" id="hero-tag">Est. 2024 — Quaraí, Rio Grande do Sul</div>
+      <div class="htit">CASA<br><em>GAMA</em></div>
+      <p class="hdesc" id="hero-desc">Formas sculpturais. Detalhes com propósito. Objetos que transformam ambientes em experiências duradouras.</p>
+      <span class="hcta" onclick="scrollP()">Ver coleção</span>
+      <div class="hstats">
+        <div class="hst"><strong id="hn">0</strong><span>Peças</span></div>
+        <div class="hst"><strong id="hc">0</strong><span>Categorias</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cs" id="cs"><button class="cb active" onclick="filterCat('all',this)">Todos</button></div>
+
+  <section class="ps" id="colecao">
+    <div class="shr"><div class="sti">Coleção</div><div class="pcl" id="pcl">0 Peças</div></div>
+    <div class="pg" id="pg"></div>
+  </section>
+
+  <footer class="sf" id="sobre">
+    <div class="fi2">
+      <div class="fb">
+        <img id="fli" src="" alt="Casa Gama" style="display:none;">
+        <span class="ftxt" id="ftxt">Casa Gama</span>
+        <p id="footer-desc-display">Objetos de decoração selecionados com intenção. Cada peça conta uma história e transforma o espaço em algo singular.</p>
+      </div>
+      <div class="fc"><h4>Atendimento</h4><p id="footer-hours-display">Segunda a sexta<br>09h às 18h<br><br>Via WhatsApp</p></div>
+      <div class="fc"><h4>Onde estamos</h4><p id="footer-loc-display">Quaraí<br>Rio Grande do Sul<br>Brasil</p></div>
+    </div>
+  </footer>
+  <div class="fbt" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <p id="footer-copy" style="font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.22);">GAMA Arquitetura — Casa Gama — Todos os direitos reservados</p>
+    <div class="social-bar">
+      <a class="social-link" id="ig-social-link" href="#" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/></svg>
+        <span>Instagram</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── WhatsApp FAB ── -->
+<a class="wpp-fab" id="wpp-fab" href="#" target="_blank" rel="noopener" aria-label="Fale conosco pelo WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<!-- ── CART OVERLAY + DRAWER ──────────────── -->
+<div id="cart-overlay" onclick="closeCart()"></div>
+<div id="cart-drawer">
+  <div class="cd-handle"></div>
+  <div class="cd-hdr">
+    <div class="cd-title">Carrinho</div>
+    <button class="cd-close" onclick="closeCart()">&#x2715;</button>
+  </div>
+  <div class="cd-body" id="cd-body"></div>
+  <div class="cd-foot" id="cd-foot" style="display:none;">
+    <div class="cd-pay-lbl">Forma de pagamento</div>
+    <div id="cd-pay-opts"></div>
+    <label class="cd-gift-row">
+      <input type="checkbox" id="giftcb" onchange="toggleGift()">
+      <span class="cd-gift-lbl">É um presente</span>
+    </label>
+    <div class="cd-gift-msg" id="giftflds">
+      <textarea id="giftmsg" placeholder="Mensagem para o presenteado..."></textarea>
+      <div class="cd-gift-note">O preço será ocultado na embalagem.</div>
+    </div>
+    <div class="cd-total-row">
+      <span class="cd-total-lbl">Total</span>
+      <span class="cd-total-val" id="cd-total">R$ 0,00</span>
+    </div>
+    <div class="cd-mod" id="cd-mod"></div>
+    <button class="bchk" onclick="finalizarPedido()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      Finalizar pedido via WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- ── PRODUCT BOTTOM SHEET ───────────────── -->
+<div class="pbs-overlay" id="pbs-overlay" onclick="closePBS()"></div>
+<div class="pbs" id="pbs">
+  <div class="pbs-handle"></div>
+  <div class="pbs-inner">
+    <div class="pbs-img" id="pbs-img">
+      <button class="pbs-close" onclick="closePBS()">&#x2715;</button>
+      <div id="pbs-img-content"></div>
+    </div>
+    <div class="pbs-code" id="pbs-code"></div>
+    <div class="pbs-name" id="pbs-name"></div>
+    <div class="pbs-cat" id="pbs-cat"></div>
+    <div class="pbs-pr-lbl">Preço</div>
+    <div class="pbs-pr" id="pbs-pr"></div>
+    <div class="pbs-calc" id="pbs-calc"></div>
+    <div class="pbs-stock" id="pbs-stock"></div>
+    <button class="badd-cart" id="badd-cart-btn" onclick="addToCart()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Adicionar ao carrinho
+    </button>
+  </div>
+</div>
+
+<!-- ── MODAIS ADMIN ───────────────────────── -->
+<div class="mov" id="pfm">
+  <div class="mb">
+    <div class="mt" id="pft">Novo produto</div>
+    <div class="ms">Preencha os dados do produto</div>
+    <div class="fgr">
+      <div class="fg"><label class="fl">Código interno (Casa Gama)</label><input class="fi" id="fc" placeholder="CG-VA-001"></div>
+      <div class="fg"><label class="fl">Cod. Fornecedor (Mart)</label><input class="fi" id="fsc" placeholder="13061" oninput="updateMartLink()"></div>
+      <div class="fg full"><label class="fl">Categoria</label><select class="fsel" id="fcat"></select></div>
+      <div class="fg full" id="mart-link-row" style="display:none;">
+        <label class="fl">Link do produto na Mart</label>
+        <a id="mart-link-btn" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--cd);color:#fff;padding:9px 16px;font-family:Jost,sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;width:fit-content;">
+          Abrir produto na Mart Collection →
+        </a>
+        <span style="font-size:10px;color:var(--txl);margin-top:4px;display:block;">Abra o link, copie a URL da imagem do produto e cole no campo abaixo.</span>
+      </div>
+      <div class="fg full"><label class="fl">Nome do produto</label><input class="fi" id="fn" placeholder="Vaso em Vidro - P"></div>
+      <div class="fg"><label class="fl">Preço de venda (R$)</label><input class="fi" id="fp" type="number" step="0.01" placeholder="0.00"></div>
+      <div class="fg"><label class="fl">Qtd. em estoque</label><input class="fi" id="fst" type="number" placeholder="1"></div>
+      <div class="fg full"><label class="fl">URL da foto do produto (opcional)</label><input class="fi" id="fim" placeholder="https://..."></div>
+      <div class="fg full"><label class="fl">Disponível para compra?</label><select class="fsel" id="fav"><option value="true">Sim</option><option value="false">Não</option></select></div>
+    </div>
+    <div class="ma"><button class="bcl" onclick="closePF()">Cancelar</button><button class="bsv" onclick="saveProd()">Salvar produto</button></div>
+  </div>
+</div>
+
+<div class="mov" id="cfm">
+  <div class="mb" style="max-width:360px;">
+    <div class="mt">Nova categoria</div>
+    <div class="ms">Adicione uma categoria à loja</div>
+    <div class="fg"><label class="fl">Nome da categoria</label><input class="fi" id="cn" placeholder="Ex.: Vasos, Bandejas..."></div>
+    <div class="ma"><button class="bcl" onclick="closeCF()">Cancelar</button><button class="bsv" onclick="saveCat()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- ── SENHA ADMIN ────────────────────────── -->
+<div class="mov" id="pw-modal">
+  <div class="mb" style="max-width:360px;text-align:center;">
+    <div class="mt">Acesso ao painel</div>
+    <div class="ms" style="margin-bottom:16px;">Digite a senha para continuar</div>
+    <div class="fg"><input class="fi" id="pw-input" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')checkPw()"></div>
+    <div class="ma" style="justify-content:center;"><button class="bsv" onclick="checkPw()">Entrar</button></div>
+    <p id="pw-err" style="font-size:11px;color:#c0392b;margin-top:8px;display:none;">Senha incorreta.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STORAGE ──────────────────────────────────
+const LS={get:k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),del:k=>localStorage.removeItem(k)};
+
+// ─── ÍCONES POR CATEGORIA ────────────────────
+const ICONS={
+  'vasos':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><path d="M8 3h8l2 6H6L8 3z"/><path d="M6 9c0 7 2 10 6 12 4-2 6-5 6-12"/></svg>',
+  'porta-retratos':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="6" y="6" width="12" height="12" rx="1"/></svg>',
+  'livros-caixa':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><rect x="3" y="4" width="18" height="16" rx="1"/><line x1="7" y1="4" x2="7" y2="20"/></svg>',
+  'esculturas':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><ellipse cx="12" cy="7" rx="4" ry="5"/><path d="M8 12Q5 19 12 21Q19 19 16 12"/></svg>',
+  'bandejas':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><ellipse cx="12" cy="14" rx="9" ry="4"/><path d="M3 14Q3 8 12 8Q21 8 21 14"/></svg>',
+  'kits':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><rect x="3" y="9" width="6" height="9" rx="1"/><rect x="15" y="9" width="6" height="9" rx="1"/><rect x="8" y="5" width="8" height="6" rx="1"/></svg>',
+  'caixas':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><line x1="12" y1="3" x2="12" y2="21"/></svg>',
+  'esculturas-metal':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>',
+  'colares-esculturas':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><circle cx="12" cy="12" r="8"/><path d="M8 12 Q12 8 16 12 Q12 16 8 12"/></svg>',
+  'default':'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#6b6844" stroke-width="0.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>'
+};
+function catIco(cat){const s=slugify(cat);return ICONS[s]||ICONS['default'];}
+
+// ─── DEFAULTS ─────────────────────────────────
+const DCATS=['Porta-retratos','Livros-caixa','Vasos','Esculturas','Esculturas Metal','Bandejas','Caixas','Kits','Kits Banheiro','Organização','Colares/Esculturas'];
+const DPMS=[{name:'PIX',modifier:-5,type:'discount'},{name:'Cartão',modifier:0,type:'neutral'},{name:'Boleto',modifier:2,type:'surcharge'}];
+const DPW='casagama2024';
+const DWPP='5555996893350';
+// 90 produtos — Valores coluna I (custo × 1.03 × (1 + margem))
+const INIT_PRODS=[
+  {code:'CG-PR-001',supplierCode:'13061',name:'Porta-Retrato em MDF - 20x25',category:'Porta-retratos',price:39.35,stock:6,image:'',available:true},
+  {code:'CG-LC-001',supplierCode:'13592',name:'Livro-Caixa MDF/Linho - P',category:'Livros-caixa',price:74.04,stock:1,image:'',available:true},
+  {code:'CG-LC-002',supplierCode:'13593',name:'Livro-Caixa MDF/Linho - M',category:'Livros-caixa',price:74.04,stock:1,image:'',available:true},
+  {code:'CG-LC-003',supplierCode:'13594',name:'Livro-Caixa MDF/Linho - G',category:'Livros-caixa',price:80.22,stock:1,image:'',available:true},
+  {code:'CG-LC-004',supplierCode:'13595',name:'Livro-Caixa MDF/Linho - GG',category:'Livros-caixa',price:74.04,stock:1,image:'',available:true},
+  {code:'CG-CO-001',supplierCode:'15130',name:'Colar Decorativo em Madeira',category:'Colares/Esculturas',price:36.96,stock:1,image:'',available:true},
+  {code:'CG-ES-001',supplierCode:'16358',name:'Lupa em Polirresina',category:'Esculturas',price:61.68,stock:1,image:'',available:true},
+  {code:'CG-LC-005',supplierCode:'16698',name:'Livro-Caixa MDF/Linho - PP',category:'Livros-caixa',price:61.68,stock:1,image:'',available:true},
+  {code:'CG-LC-006',supplierCode:'16699',name:'Livro-Caixa MDF/Linho - XG',category:'Livros-caixa',price:86.40,stock:1,image:'',available:true},
+  {code:'CG-VA-001',supplierCode:'17332',name:'Vaso em Vidro - P',category:'Vasos',price:49.38,stock:1,image:'',available:true},
+  {code:'CG-ES-002',supplierCode:'17472',name:'Escultura Ouriço em Polirresina',category:'Esculturas',price:43.14,stock:1,image:'',available:true},
+  {code:'CG-ES-003',supplierCode:'17503',name:'Escultura Elos Polirresina - G',category:'Esculturas',price:111.12,stock:1,image:'',available:true},
+  {code:'CG-BD-001',supplierCode:'17557',name:'Bandeja em Cerâmica',category:'Bandejas',price:65.68,stock:2,image:'',available:true},
+  {code:'CG-PR-002',supplierCode:'17631',name:'Porta-Retrato Poliest./Vidro 15x20',category:'Porta-retratos',price:18.85,stock:4,image:'',available:true},
+  {code:'CG-ES-004',supplierCode:'17708',name:'Escultura Busto em Polirresina',category:'Esculturas',price:98.76,stock:1,image:'',available:true},
+  {code:'CG-ES-005',supplierCode:'17710',name:'Escultura em Polirresina',category:'Esculturas',price:95.09,stock:1,image:'',available:true},
+  {code:'CG-VA-002',supplierCode:'17738',name:'Vaso em Vidro - Mini',category:'Vasos',price:26.88,stock:1,image:'',available:false},
+  {code:'CG-CX-001',supplierCode:'18226',name:'Kit Caixas MDF/PU - 2 Pcs',category:'Caixas',price:160.87,stock:1,image:'',available:true},
+  {code:'CG-KT-001',supplierCode:'18336',name:'Kit Ampulhetas Vidro 3 Pcs - A',category:'Kits',price:61.68,stock:1,image:'',available:true},
+  {code:'CG-KB-001',supplierCode:'18357',name:'Kit Cimento Banheiro - 4 Pcs',category:'Kits Banheiro',price:177.56,stock:1,image:'',available:true},
+  {code:'CG-EM-001',supplierCode:'18377',name:'Escultura em Metal - G',category:'Esculturas Metal',price:128.45,stock:1,image:'',available:true},
+  {code:'CG-ES-006',supplierCode:'18385',name:'Escultura Mulher Polirresina - P',category:'Esculturas',price:49.32,stock:1,image:'',available:true},
+  {code:'CG-VA-004',supplierCode:'18389',name:'Vaso em Polirresina - M',category:'Vasos',price:47.50,stock:1,image:'',available:true},
+  {code:'CG-VA-005',supplierCode:'18551',name:'Vaso em Vidro - M',category:'Vasos',price:71.64,stock:1,image:'',available:true},
+  {code:'CG-VA-006',supplierCode:'18553',name:'Vaso em Vidro - G',category:'Vasos',price:74.10,stock:1,image:'',available:true},
+  {code:'CG-CO-002',supplierCode:'18557',name:'Colar Decorativo Madeira - P',category:'Colares/Esculturas',price:25.87,stock:1,image:'',available:true},
+  {code:'CG-VA-008',supplierCode:'18691',name:'Vaso em Vidro - Alto',category:'Vasos',price:61.74,stock:1,image:'',available:true},
+  {code:'CG-VA-007',supplierCode:'18692',name:'Vaso em Vidro - Cônico',category:'Vasos',price:59.28,stock:1,image:'',available:true},
+  {code:'CG-KT-002',supplierCode:'18739',name:'Kit Ampulhetas Vidro 3 Pcs - B',category:'Kits',price:61.68,stock:1,image:'',available:true},
+  {code:'CG-CX-002',supplierCode:'18903',name:'Caixa em Polirresina',category:'Caixas',price:49.38,stock:1,image:'',available:true},
+  {code:'CG-EM-002',supplierCode:'18915',name:'Escultura em Metal - P',category:'Esculturas Metal',price:52.47,stock:1,image:'',available:true},
+  {code:'CG-ES-007',supplierCode:'18920',name:'Escultura Corrente Rattan',category:'Esculturas',price:123.48,stock:1,image:'',available:true},
+  {code:'CG-ES-008',supplierCode:'18929',name:'Escultura Elos Polirresina - P',category:'Esculturas',price:30.84,stock:1,image:'',available:true},
+  {code:'CG-PR-003',supplierCode:'19238',name:'Porta-Retrato 10x15 - A',category:'Porta-retratos',price:17.11,stock:4,image:'',available:true},
+  {code:'CG-PR-004',supplierCode:'19240',name:'Porta-Retrato 20x25 - A',category:'Porta-retratos',price:26.88,stock:4,image:'',available:true},
+  {code:'CG-BD-002',supplierCode:'19296',name:'Bandeja em Fibra Natural',category:'Bandejas',price:171.63,stock:1,image:'',available:true},
+  {code:'CG-ES-009',supplierCode:'19470',name:'Escultura Nó em Vidro',category:'Esculturas',price:100.56,stock:1,image:'',available:true},
+  {code:'CG-ES-010',supplierCode:'19487',name:'Aparadores de Livros em Polirresina',category:'Esculturas',price:111.12,stock:1,image:'',available:true},
+  {code:'CG-OR-001',supplierCode:'19536',name:'Lixeira MDF/PU - 11 Litros',category:'Organização',price:247.08,stock:1,image:'',available:true},
+  {code:'CG-VA-009',supplierCode:'19622',name:'Vaso em Vidro Transparente - G',category:'Vasos',price:96.33,stock:1,image:'',available:true},
+  {code:'CG-KT-003',supplierCode:'19661',name:'Kit Minivasos Vidro 3 Pcs - A',category:'Kits',price:49.32,stock:1,image:'',available:true},
+  {code:'CG-KT-004',supplierCode:'19665',name:'Kit Minivasos Vidro 3 Pcs - B',category:'Kits',price:33.30,stock:1,image:'',available:true},
+  {code:'CG-VA-011',supplierCode:'19669',name:'Vaso em Vidro Âmbar - G',category:'Vasos',price:121.04,stock:1,image:'',available:true},
+  {code:'CG-VA-012',supplierCode:'19670',name:'Vaso em Vidro Âmbar - GG',category:'Vasos',price:164.30,stock:1,image:'',available:true},
+  {code:'CG-VA-013',supplierCode:'19773',name:'Vaso em Vidro Fumê - P',category:'Vasos',price:69.13,stock:1,image:'',available:true},
+  {code:'CG-VA-014',supplierCode:'19774',name:'Vaso em Vidro Fumê - M',category:'Vasos',price:86.43,stock:1,image:'',available:true},
+  {code:'CG-VA-015',supplierCode:'19799',name:'Pote Decorativo em Cerâmica',category:'Vasos',price:53.18,stock:1,image:'',available:true},
+  {code:'CG-VA-016',supplierCode:'19818',name:'Vaso em Vidro Cilíndrico',category:'Vasos',price:59.25,stock:1,image:'',available:true},
+  {code:'CG-VA-017',supplierCode:'19846',name:'Vaso em Cerâmica - G',category:'Vasos',price:100.08,stock:1,image:'',available:true},
+  {code:'CG-VA-018',supplierCode:'19847',name:'Vaso em Cerâmica - M',category:'Vasos',price:81.54,stock:1,image:'',available:true},
+  {code:'CG-EM-003',supplierCode:'19898',name:'Escultura Asterisco em Metal',category:'Esculturas Metal',price:60.48,stock:1,image:'',available:true},
+  {code:'CG-VA-019',supplierCode:'19920',name:'Vaso em Cerâmica - P Terracota',category:'Vasos',price:46.29,stock:1,image:'',available:true},
+  {code:'CG-VA-020',supplierCode:'19921',name:'Vaso em Cerâmica - P Bege',category:'Vasos',price:46.29,stock:1,image:'',available:false},
+  {code:'CG-KT-005',supplierCode:'19944',name:'Kit Bandejas Metal - 2 Pcs',category:'Kits',price:222.36,stock:1,image:'',available:true},
+  {code:'CG-ES-011',supplierCode:'20125',name:'Escultura Face Polirresina - P',category:'Esculturas',price:37.01,stock:1,image:'',available:true},
+  {code:'CG-ES-012',supplierCode:'20126',name:'Escultura Face Polirresina - M',category:'Esculturas',price:66.67,stock:1,image:'',available:true},
+  {code:'CG-BD-003',supplierCode:'20175',name:'Bandeja em Polirresina',category:'Bandejas',price:148.20,stock:1,image:'',available:true},
+  {code:'CG-BD-004',supplierCode:'20351',name:'Centro de Mesa em Polirresina',category:'Bandejas',price:185.28,stock:1,image:'',available:true},
+  {code:'CG-PR-005',supplierCode:'20639',name:'Porta-Retrato 10x15 - B',category:'Porta-retratos',price:20.86,stock:4,image:'',available:true},
+  {code:'CG-PR-006',supplierCode:'20640',name:'Porta-Retrato 15x20 - B',category:'Porta-retratos',price:25.05,stock:4,image:'',available:true},
+  {code:'CG-PR-007',supplierCode:'20641',name:'Porta-Retrato 10x15 - C',category:'Porta-retratos',price:12.57,stock:4,image:'',available:true},
+  {code:'CG-PR-008',supplierCode:'20642',name:'Porta-Retrato 15x20 - C',category:'Porta-retratos',price:19.20,stock:4,image:'',available:true},
+  {code:'CG-CX-003',supplierCode:'20667',name:'Caixa MDF/PU - P',category:'Caixas',price:74.09,stock:1,image:'',available:true},
+  {code:'CG-CX-004',supplierCode:'20668',name:'Caixa MDF/PU - M',category:'Caixas',price:103.74,stock:1,image:'',available:true},
+  {code:'CG-CX-005',supplierCode:'20690',name:'Caixa MDF/PU - P2',category:'Caixas',price:73.46,stock:1,image:'',available:true},
+  {code:'CG-CX-006',supplierCode:'20691',name:'Caixa MDF/PU - M2',category:'Caixas',price:82.11,stock:1,image:'',available:true},
+  {code:'CG-PR-009',supplierCode:'20694',name:'Porta-Retrato 10x15 - D',category:'Porta-retratos',price:24.41,stock:4,image:'',available:true},
+  {code:'CG-PR-010',supplierCode:'20695',name:'Porta-Retrato 15x20 - D',category:'Porta-retratos',price:31.42,stock:4,image:'',available:true},
+  {code:'CG-CO-003',supplierCode:'20715',name:'Colar Decorativo Madeira - M',category:'Colares/Esculturas',price:36.96,stock:1,image:'',available:true},
+  {code:'CG-LC-007',supplierCode:'20744',name:'Livro-Caixa MDF/PU - P',category:'Livros-caixa',price:74.04,stock:1,image:'',available:true},
+  {code:'CG-LC-008',supplierCode:'20745',name:'Livro-Caixa MDF/PU - M',category:'Livros-caixa',price:86.40,stock:1,image:'',available:true},
+  {code:'CG-CX-007',supplierCode:'20787',name:'Caixa MDF/PU - P3',category:'Caixas',price:61.74,stock:1,image:'',available:true},
+  {code:'CG-ES-013',supplierCode:'20930',name:'Escultura Face Polirresina - G',category:'Esculturas',price:46.92,stock:1,image:'',available:true},
+  {code:'CG-ES-014',supplierCode:'21024',name:'Escultura Mulher Polirresina - G',category:'Esculturas',price:117.30,stock:1,image:'',available:true},
+  {code:'CG-PR-011',supplierCode:'21040',name:'Porta-Retrato 10x15 - E',category:'Porta-retratos',price:24.44,stock:4,image:'',available:true},
+  {code:'CG-PR-012',supplierCode:'21041',name:'Porta-Retrato 15x20 - E',category:'Porta-retratos',price:31.42,stock:4,image:'',available:true},
+  {code:'CG-PR-013',supplierCode:'21044',name:'Porta-Retrato 10x15 - F',category:'Porta-retratos',price:24.44,stock:4,image:'',available:true},
+  {code:'CG-PR-014',supplierCode:'21045',name:'Porta-Retrato 15x20 - F',category:'Porta-retratos',price:31.42,stock:4,image:'',available:true},
+  {code:'CG-BD-005',supplierCode:'21233',name:'Bandeja em Mármore',category:'Bandejas',price:98.76,stock:1,image:'',available:true},
+  {code:'CG-OR-002',supplierCode:'21258',name:'Lixeira em Madeira - 10 Litros',category:'Organização',price:224.94,stock:1,image:'',available:true},
+  {code:'CG-EM-004',supplierCode:'21284',name:'Escultura Corrente em Metal',category:'Esculturas Metal',price:123.48,stock:1,image:'',available:true},
+  {code:'CG-PR-015',supplierCode:'21293',name:'Porta-Retrato Duplo Madeira 10x15',category:'Porta-retratos',price:86.40,stock:1,image:'',available:true},
+  {code:'CG-ES-015',supplierCode:'21331',name:'Escultura Pessoa Polirresina - A',category:'Esculturas',price:92.58,stock:1,image:'',available:true},
+  {code:'CG-ES-016',supplierCode:'21332',name:'Escultura Pessoa Polirresina - B',category:'Esculturas',price:92.58,stock:1,image:'',available:true},
+  {code:'CG-KT-006',supplierCode:'21441',name:'Kit Vasos Cerâmica 3 Pcs - A',category:'Kits',price:197.64,stock:1,image:'',available:true},
+  {code:'CG-ES-017',supplierCode:'21563',name:'Escultura Pessoas em Polirresina',category:'Esculturas',price:135.84,stock:1,image:'',available:true},
+  {code:'CG-ES-018',supplierCode:'21763',name:'Escultura Pessoa Polirresina - C',category:'Esculturas',price:111.12,stock:1,image:'',available:true},
+  {code:'CG-ES-019',supplierCode:'21764',name:'Escultura Pessoa Polirresina - D',category:'Esculturas',price:92.58,stock:1,image:'',available:true},
+  {code:'CG-KB-002',supplierCode:'21769',name:'Kit Cerâmica Banheiro - 3 Pcs',category:'Kits Banheiro',price:112.41,stock:1,image:'',available:true},
+  {code:'CG-KT-007',supplierCode:'22425',name:'Kit Vasos Cerâmica 3 Pcs - B',category:'Kits',price:172.92,stock:1,image:'',available:true},
+];
+
+
+// ─── VERSION MANAGEMENT ──────────────────────────────
+const DATA_VERSION = '7'; // bump this when deploying new product data
+
+function migrateData(){
+  const storedVersion = localStorage.getItem('cg_version');
+  if(storedVersion === DATA_VERSION) return; // already current
+  
+  // First run or version mismatch — seed from INIT_PRODS
+  // BUT preserve any user-edited images, prices, and settings
+  const existingProds = LS.get('cg_prods');
+  
+  if(!existingProds || existingProds.length === 0){
+    // Fresh install — use defaults
+    LS.set('cg_prods', INIT_PRODS);
+  } else {
+    // Merge: new products added, existing products keep user-edited fields
+    const existingMap = {};
+    existingProds.forEach(p => { existingMap[p.code] = p; });
+    
+    const merged = INIT_PRODS.map(newP => {
+      const old = existingMap[newP.code];
+      if(!old) return newP; // new product — add it
+      return {
+        ...newP,                    // take new defaults (name, category, supplierCode)
+        image: old.image || newP.image,         // keep user's image if set
+        price: old.price !== 0 ? old.price : newP.price, // keep user price if edited
+        stock: old.stock,           // always keep current stock count
+        available: old.available,   // keep availability state
+      };
+    });
+    LS.set('cg_prods', merged);
+  }
+  
+  localStorage.setItem('cg_version', DATA_VERSION);
+  console.log('[Casa Gama] Migrated to version', DATA_VERSION);
+}
+
+// ─── CARRINHO ─────────────────────────────────
+let cart=[];let selPay=0;let curProd=null;
+
+// ─── DADOS ────────────────────────────────────
+function getData(){
+  return{
+    products:LS.get('cg_prods')||INIT_PRODS,
+    categories:LS.get('cg_cats')||DCATS,
+    payments:LS.get('cg_pms')||DPMS,
+    whatsapp:LS.get('cg_wpp')||DWPP,
+    instagram:LS.get('cg_ig')||'',
+    password:LS.get('cg_pw')||DPW,
+    logo:LS.get('cg_logo')||null,
+    storeName:LS.get('cg_name')||'Casa Gama',
+    heroDesc:LS.get('cg_hdesc')||'Formas sculpturais. Detalhes com propósito. Objetos que transformam ambientes em experiências duradouras.',
+    footerDesc:LS.get('cg_fdesc')||'Objetos de decoração selecionados com intenção. Cada peça conta uma história e transforma o espaço em algo singular.',
+    footerHours:LS.get('cg_fhours')||'Segunda a sexta, 09h às 18h',
+    footerLoc:LS.get('cg_floc')||'Quaraí, Rio Grande do Sul, Brasil',
+  };
+}
+function slugify(s){return(s||'').toLowerCase().replace(/\s+/g,'-').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'');}
+function fmt(v){return'R$ '+Number(v).toFixed(2).replace('.',',');}
+
+// ─── LOGO ─────────────────────────────────────
+function uploadLogo(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{LS.set('cg_logo',e.target.result);applyLogo(e.target.result);showToast('Logo carregado.');}
+  r.readAsDataURL(f);
+}
+function applyLogo(src){
+  ['sli','ali','fli','lps'].forEach(id=>{const el=document.getElementById(id);if(el){el.src=src;el.style.display='block';}});
+  ['stl','atn','ftxt'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  const h=document.getElementById('lph');if(h)h.style.display='none';
+}
+function removeLogo(){
+  LS.del('cg_logo');
+  ['sli','ali','fli','lps'].forEach(id=>{const el=document.getElementById(id);if(el){el.src='';el.style.display='none';}});
+  ['stl','atn','ftxt'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
+  const h=document.getElementById('lph');if(h)h.style.display='';
+  showToast('Logo removido.');
+}
+
+// ─── ACESSO SECRETO (via hash na URL) ─────────
+const SECRET_HASH='#gestao-privado';
+function checkHash(){
+  if(window.location.hash===SECRET_HASH){
+    openAdminWithPassword();
+  }
+}
+function openAdminWithPassword(){
+  document.getElementById('pw-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('pw-input').focus(),100);
+}
+function checkPw(){
+  const pw=document.getElementById('pw-input').value;
+  if(pw===(LS.get('cg_pw')||DPW)){
+    document.getElementById('pw-modal').classList.remove('open');
+    document.getElementById('store').style.display='none';
+    document.getElementById('adm').classList.add('open');
+    renderAdmP();renderAdmC();renderAdmS();
+    // Update secret URL display
+    const su=document.getElementById('secret-url-display');
+    if(su)su.textContent=window.location.href.split('#')[0]+SECRET_HASH;
+  }else{
+    document.getElementById('pw-err').style.display='block';
+    document.getElementById('pw-input').value='';
+    document.getElementById('pw-input').focus();
+  }
+}
+function closeAdmin(){
+  document.getElementById('adm').classList.remove('open');
+  document.getElementById('store').style.display='block';
+  window.history.replaceState(null,'',window.location.pathname);
+  renderStore();
+}
+function copySecretUrl(){
+  const url=window.location.href.split('#')[0]+SECRET_HASH;
+  navigator.clipboard.writeText(url).then(()=>showToast('URL secreta copiada!')).catch(()=>showToast('Copie manualmente: '+url));
+}
+function showSec(s,btn){
+  if(s==='publicacao'){const el=document.getElementById('pub-secret-url');if(el)el.textContent=window.location.href.split('#')[0]+'#gestao-privado';}
+  document.querySelectorAll('.as-sec').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.an button').forEach(x=>x.classList.remove('active'));
+  document.getElementById('sec-'+s).classList.add('active');btn.classList.add('active');
+}
+
+// ─── ADMIN RENDER ─────────────────────────────
+function updateMartLink(){
+  const sc=document.getElementById('fsc');
+  const row=document.getElementById('mart-link-row');
+  const btn=document.getElementById('mart-link-btn');
+  if(!sc||!row||!btn)return;
+  const val=(sc.value||'').trim();
+  if(val){
+    row.style.display='block';
+    btn.href='https://areadocliente.martcollection.com.br/produtos/?s='+val;
+  }else{
+    row.style.display='none';
+  }
+}
+
+function renderAdmP(){
+  const{products}=getData();const tb=document.getElementById('atb');
+  if(!products.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--txl);">Nenhum produto cadastrado.</td></tr>';return;}
+  tb.innerHTML=products.map((p,i)=>{
+    const sb=p.stock<=0?'sout':p.stock<=2?'slow':'sok';
+    const stTxt=p.stock<=0?'0 un.':p.stock+' un.';
+    const av=p.available&&p.stock>0?'<span class="sb sav">Disponível</span>':'<span class="sb sna">Indisponível</span>';
+    return`<tr><td style="font-size:10px;letter-spacing:.08em;">${p.code}</td><td style="font-size:10px;color:var(--txl);">${p.supplierCode||'-'}</td><td>${p.name}</td><td style="color:var(--txl);font-size:11px;">${p.category}</td><td><span class="sb ${sb}">${stTxt}</span></td><td>${fmt(p.price)}</td><td>${av}</td><td style="white-space:nowrap;"><button class="be" onclick="editProd(${i})">Editar</button><button class="bt" onclick="toggleProd(${i})">${p.available?'Pausar':'Ativar'}</button><button class="bd" onclick="delProd(${i})">Excluir</button></td></tr>`;
+  }).join('');
+}
+function renderAdmC(){
+  const{categories}=getData();
+  document.getElementById('actb').innerHTML=categories.map((c,i)=>`<tr><td>${c}</td><td><button class="bd" onclick="delCat(${i})">Excluir</button></td></tr>`).join('');
+}
+function renderAdmS(){
+  const d=getData();
+  document.getElementById('wi').value=d.whatsapp;
+  const igEl=document.getElementById('ig-url');if(igEl)igEl.value=d.instagram;
+  document.getElementById('sni').value=d.storeName;
+  document.getElementById('hero-desc-input').value=d.heroDesc;
+  document.getElementById('footer-desc').value=d.footerDesc;
+  document.getElementById('footer-hours').value=d.footerHours;
+  document.getElementById('footer-loc').value=d.footerLoc;
+  renderPMA(d.payments);
+  if(d.logo){const l=document.getElementById('lps');if(l){l.src=d.logo;l.style.display='block';}const h=document.getElementById('lph');if(h)h.style.display='none';}
+  const su=document.getElementById('secret-url-display');if(su)su.textContent=window.location.href.split('#')[0]+SECRET_HASH;
+}
+function renderPMA(pms){
+  document.getElementById('pmc').innerHTML=pms.map((p,i)=>
+    `<div class="pmr"><input class="fi" value="${p.name}" id="pmn${i}" style="max-width:160px;flex:1;"><input class="fi" value="${p.modifier}" id="pmm${i}" type="number" step="0.1" style="width:80px;flex:none;"><span style="font-size:10px;color:var(--txl);flex-shrink:0;">% (negativo = desconto)</span><button class="bd" onclick="removePM(${i})" style="flex-shrink:0;">×</button></div>`
+  ).join('');
+}
+
+// ─── PRODUCT CRUD ─────────────────────────────
+let eidx=null;
+function openPF(idx){
+  const{categories}=getData();
+  document.getElementById('fcat').innerHTML=categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+  document.getElementById('pft').textContent=idx!==undefined?'Editar produto':'Novo produto';
+  if(idx!==undefined){
+    eidx=idx;const p=getData().products[idx];
+    ['fc','fn','fim'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fc').value=p.code;document.getElementById('fn').value=p.name;
+    document.getElementById('fsc').value=p.supplierCode||'';updateMartLink();
+    document.getElementById('fp').value=p.price;document.getElementById('fst').value=p.stock;
+    document.getElementById('fim').value=p.image||'';document.getElementById('fcat').value=p.category;
+    document.getElementById('fav').value=p.available.toString();
+  }else{
+    eidx=null;['fc','fn','fim','fsc'].forEach(id=>document.getElementById(id).value='');updateMartLink();
+    document.getElementById('fp').value='0';document.getElementById('fst').value='1';
+    document.getElementById('fav').value='true';
+  }
+  document.getElementById('pfm').classList.add('open');
+}
+function editProd(i){openPF(i);}
+function closePF(){document.getElementById('pfm').classList.remove('open');}
+function saveProd(){
+  const{products}=getData();
+  const prod={code:document.getElementById('fc').value.trim().toUpperCase(),supplierCode:(document.getElementById('fsc').value||'').trim(),name:document.getElementById('fn').value.trim(),
+    price:parseFloat(document.getElementById('fp').value)||0,stock:parseInt(document.getElementById('fst').value)||0,
+    image:document.getElementById('fim').value.trim(),category:document.getElementById('fcat').value,
+    available:document.getElementById('fav').value==='true'};
+  if(!prod.code||!prod.name){showToast('Preencha código e nome.');return;}
+  if(eidx!==null)products[eidx]=prod;else products.push(prod);
+  LS.set('cg_prods',products);closePF();renderAdmP();showToast('Produto salvo com sucesso.');
+}
+function delProd(i){if(!confirm('Excluir este produto?'))return;const{products}=getData();products.splice(i,1);LS.set('cg_prods',products);renderAdmP();showToast('Produto excluído.');}
+function toggleProd(i){const{products}=getData();products[i].available=!products[i].available;LS.set('cg_prods',products);renderAdmP();showToast('Status alterado.');}
+function openCF(){document.getElementById('cn').value='';document.getElementById('cfm').classList.add('open');}
+function closeCF(){document.getElementById('cfm').classList.remove('open');}
+function saveCat(){const n=document.getElementById('cn').value.trim();if(!n)return;const{categories}=getData();if(!categories.includes(n)){categories.push(n);LS.set('cg_cats',categories);renderAdmC();}closeCF();showToast('Categoria criada.');}
+function delCat(i){const{categories}=getData();categories.splice(i,1);LS.set('cg_cats',categories);renderAdmC();showToast('Categoria removida.');}
+
+// ─── SETTINGS ─────────────────────────────────
+function saveSt(t){
+  if(t==='logo')showToast('Logo salvo com sucesso.');
+  if(t==='storename'){const n=document.getElementById('sni').value.trim();if(n){LS.set('cg_name',n);document.title=n;}showToast('Nome salvo.');}
+  if(t==='herodesc'){const v=document.getElementById('hero-desc-input').value.trim();if(v)LS.set('cg_hdesc',v);showToast('Texto salvo.');}
+  if(t==='social'){
+    LS.set('cg_wpp',document.getElementById('wi').value.trim());
+    const ig=document.getElementById('ig-url');if(ig)LS.set('cg_ig',ig.value.trim());
+    updateSocialLinks();showToast('Links sociais salvos.');
+  }
+  if(t==='footer'){
+    LS.set('cg_fdesc',document.getElementById('footer-desc').value.trim());
+    LS.set('cg_fhours',document.getElementById('footer-hours').value.trim());
+    LS.set('cg_floc',document.getElementById('footer-loc').value.trim());
+    showToast('Rodapé salvo.');
+  }
+  if(t==='payments'){
+    const c=document.querySelectorAll('[id^="pmn"]').length;const pms=[];
+    for(let i=0;i<c;i++){const n=document.getElementById(`pmn${i}`);const m=document.getElementById(`pmm${i}`);if(n&&m){const mod=parseFloat(m.value)||0;pms.push({name:n.value,modifier:mod,type:mod<0?'discount':mod>0?'surcharge':'neutral'});}}
+    LS.set('cg_pms',pms);showToast('Métodos de pagamento salvos.');
+  }
+  if(t==='password'){
+    const np=document.getElementById('npw').value;const cp=document.getElementById('cpw').value;
+    if(!np||np.length<8){showToast('Mínimo 8 caracteres.');return;}
+    if(np!==cp){showToast('As senhas não coincidem.');return;}
+    LS.set('cg_pw',np);document.getElementById('npw').value='';document.getElementById('cpw').value='';showToast('Senha alterada com sucesso.');
+  }
+}
+function addPM(){const{payments}=getData();renderPMA([...payments,{name:'Novo método',modifier:0,type:'neutral'}]);}
+function removePM(i){
+  const c=document.querySelectorAll('[id^="pmn"]').length;const pms=[];
+  for(let j=0;j<c;j++){if(j!==i){const n=document.getElementById(`pmn${j}`);const m=document.getElementById(`pmm${j}`);const mod=parseFloat(m.value)||0;pms.push({name:n.value,modifier:mod,type:mod<0?'discount':mod>0?'surcharge':'neutral'});}}
+  renderPMA(pms);
+}
+
+// ─── STORE ────────────────────────────────────
+let activeCat='all';
+function renderStore(){
+  const d=getData();
+  document.title=d.storeName||'Casa Gama';
+  if(d.logo)applyLogo(d.logo);
+  // Hero desc
+  const hd=document.getElementById('hero-desc');if(hd)hd.textContent=d.heroDesc;
+  // Footer
+  const fd=document.getElementById('footer-desc-display');if(fd)fd.textContent=d.footerDesc;
+  const fh=document.getElementById('footer-hours-display');if(fh)fh.innerHTML=d.footerHours.replace(/,\s*/g,'<br>');
+  const fl=document.getElementById('footer-loc-display');if(fl)fl.innerHTML=d.footerLoc.replace(/,\s*/g,'<br>');
+  // Nome
+  const sn=document.getElementById('stl');if(sn&&!d.logo){sn.innerHTML=`${d.storeName}<span class="stl-sub">Curated Living</span>`;}
+  const ft=document.getElementById('ftxt');if(ft)ft.textContent=d.storeName;
+  // Stats
+  const avail=d.products.filter(p=>p.available&&p.stock>0);
+  document.getElementById('hn').textContent=avail.length;
+  document.getElementById('hc').textContent=d.categories.length;
+  updateSocialLinks();
+  renderCatStrip(d.categories,d.products);
+  renderProds(activeCat);
+  updateCartCount();
+}
+function renderCatStrip(cats,products){
+  const strip=document.getElementById('cs');
+  strip.innerHTML='<button class="cb active" onclick="filterCat(\'all\',this)">Todos</button>';
+  cats.forEach(c=>{
+    // show category if it has ANY product (available or not)
+    if(getData().products.some(p=>p.category===c))
+      strip.innerHTML+=`<button class="cb" onclick="filterCat('${slugify(c)}',this)">${c}</button>`;
+  });
+}
+function filterCat(cat,btn){
+  activeCat=cat;
+  document.querySelectorAll('.cb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderProds(cat);
+}
+function renderProds(cat){
+  const{products}=getData();const grid=document.getElementById('pg');
+  // show ALL products, available or not — unavailable get overlay
+  let filtered=cat==='all'?products:products.filter(p=>slugify(p.category)===cat);
+  const availCount=filtered.filter(p=>p.available&&p.stock>0).length;
+  document.getElementById('pcl').textContent=availCount+(availCount===1?' Peça':' Peças')+' disponíveis';
+  if(!filtered.length){grid.innerHTML='<div class="empty"><p>Nenhuma peça nesta categoria.</p></div>';return;}
+  grid.innerHTML=filtered.map(p=>{
+    const ri=products.indexOf(p);
+    const unavail=!p.available||p.stock<=0;
+    const imgH=p.image?`<img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML='${catIco(p.category).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}'">`:`<div class="pi-ph">${catIco(p.category)}<span>${p.code}</span></div>`;
+    const overlay=unavail?`<div class="uov"><span>Indisponível</span></div>`:'';
+    return`<div class="pc${unavail?' unavail':''}" onclick="openPBS(${ri})">
+      <div class="pi">${imgH}${overlay}</div>
+      <div class="pcode">${p.code}</div>
+      <div class="pnm">${p.name}</div>
+      <div class="pctg">${p.category}</div>
+      <span class="pplbl">${unavail?'':'A partir de'}</span><span class="ppr">${unavail?'Indisponível':fmt(p.price)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ─── PRODUCT BOTTOM SHEET ─────────────────────
+function openPBS(idx){
+  const d=getData();const p=d.products[idx];curProd=p;
+  const unavail=!p.available||p.stock<=0;
+  document.getElementById('pbs-code').textContent=p.code;
+  document.getElementById('pbs-name').textContent=p.name;
+  document.getElementById('pbs-cat').textContent=p.category;
+  const prEl=document.getElementById('pbs-pr');
+  if(unavail){prEl.textContent='Indisponível no momento';prEl.style.fontSize='15px';prEl.style.color='var(--txl)';}
+  else{prEl.textContent=fmt(p.price);prEl.style.fontSize='';prEl.style.color='';}
+  document.getElementById('pbs-calc').textContent='';
+  document.getElementById('pbs-stock').textContent='';
+  const ic=document.getElementById('pbs-img-content');
+  ic.innerHTML=p.image?`<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">`:`<div class="pbs-img-ph">${catIco(p.category)}<span>${p.code}</span></div>`;
+  const btn=document.getElementById('badd-cart-btn');
+  btn.disabled=false;btn.style.background='';
+  if(unavail){
+    const num=(d.whatsapp||DWPP).replace(/\D/g,'');
+    const msg='Olá, Casa Gama! Gostaria de saber quando o produto '+p.name+' ('+p.code+') estará disponível novamente.';
+    btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Avisar quando disponível';
+    btn.style.background='var(--txm)';
+    btn.onclick=function(){window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');closePBS();};
+  }else{
+    btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Adicionar ao carrinho';
+    btn.onclick=addToCart;
+  }
+  document.getElementById('pbs').classList.add('open');
+  document.getElementById('pbs-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePBS(){
+  document.getElementById('pbs').classList.remove('open');
+  document.getElementById('pbs-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function addToCart(){
+  if(!curProd)return;
+  const ex=cart.find(i=>i.code===curProd.code);
+  if(ex){ex.qty++;}else{cart.push({...curProd,qty:1});}
+  updateCartCount();closePBS();
+  showToast(`${curProd.name} adicionado ao carrinho`);
+}
+
+// ─── CART ─────────────────────────────────────
+function openCart(){
+  renderCart();
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeCart(){
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function updateCartCount(){
+  const t=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cart-count').textContent=t;
+}
+function renderCart(){
+  const{payments}=getData();
+  const body=document.getElementById('cd-body');const foot=document.getElementById('cd-foot');
+  if(!cart.length){body.innerHTML='<div class="cd-empty"><p>Seu carrinho está vazio.</p></div>';foot.style.display='none';return;}
+  body.innerHTML=cart.map((item,i)=>{
+    const ih=item.image?`<img src="${item.image}" alt="${item.name}">`:`<div class="cdi-img-ph">${catIco(item.category)}</div>`;
+    return`<div class="cd-item">
+      <div class="cdi-img">${ih}</div>
+      <div class="cdi-info">
+        <div class="cdi-code">${item.code}</div>
+        <div class="cdi-name">${item.name}</div>
+        <div class="cdi-cat">${item.category}</div>
+        <div class="cdi-bottom">
+          <div class="cdi-price">${fmt(item.price*item.qty)}</div>
+          <div class="cd-qty">
+            <button onclick="chgQty(${i},-1)">−</button>
+            <span>${item.qty}</span>
+            <button onclick="chgQty(${i},1)">+</button>
+          </div>
+        </div>
+        <button class="cdi-rm" onclick="rmCart(${i})">Remover</button>
+      </div>
+    </div>`;
+  }).join('');
+  // Payment opts
+  document.getElementById('cd-pay-opts').innerHTML=payments.map((pm,i)=>{
+    const mod=pm.modifier;const lbl=mod===0?'':Math.abs(mod)+'% de '+(mod<0?'desconto':'acréscimo');
+    const cls=mod<0?'disc':mod>0?'sur':'';
+    return`<div class="po ${i===selPay?'sel':''}" onclick="selCP(${i})" id="cpo${i}"><input type="radio" name="cpay" ${i===selPay?'checked':''}><div><div class="po-nm">${pm.name}</div>${lbl?`<div class="po-mod ${cls}">${lbl}</div>`:''}</div></div>`;
+  }).join('');
+  foot.style.display='block';
+  updTotal();
+}
+function selCP(i){
+  selPay=i;
+  document.querySelectorAll('.po').forEach((el,j)=>el.classList.toggle('sel',j===i));
+  document.querySelectorAll('.po input[type=radio]').forEach((el,j)=>el.checked=j===i);
+  updTotal();
+}
+function updTotal(){
+  const{payments}=getData();const pm=payments[selPay]||{modifier:0};
+  const base=cart.reduce((s,i)=>s+(i.price*i.qty),0);
+  const final=base*(1+pm.modifier/100);
+  document.getElementById('cd-total').textContent=fmt(final);
+  const mod=pm.modifier!==0?(pm.modifier<0?`Desconto de ${fmt(base-final)} aplicado`:`Acréscimo de ${fmt(final-base)} aplicado`):'';
+  document.getElementById('cd-mod').textContent=mod;
+}
+function chgQty(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);updateCartCount();renderCart();}
+function rmCart(i){cart.splice(i,1);updateCartCount();renderCart();}
+function toggleGift(){document.getElementById('giftflds').classList.toggle('open',document.getElementById('giftcb').checked);}
+
+function finalizarPedido(){
+  const{payments,whatsapp}=getData();const pm=payments[selPay]||{name:'WhatsApp',modifier:0};
+  const base=cart.reduce((s,i)=>s+(i.price*i.qty),0);const final=base*(1+pm.modifier/100);
+  const isGift=document.getElementById('giftcb').checked;const gMsg=document.getElementById('giftmsg').value.trim();
+  let msg=`Olá, Casa Gama! Gostaria de finalizar meu pedido:\n\n`;
+  cart.forEach(it=>{msg+=`• ${it.name} (${it.code}) × ${it.qty}  →  ${fmt(it.price*it.qty)}\n`;});
+  msg+=`\nPagamento: ${pm.name}${pm.modifier!==0?` (${pm.modifier>0?'+':''}${pm.modifier}%)`:''}`;
+  if(!isGift)msg+=`\nTotal: *${fmt(final)}*`;
+  if(isGift){msg+=`\n\n🎁 *Este pedido é um presente!*`;if(gMsg)msg+=`\nMensagem: "${gMsg}"`;msg+=`\n(Preço não deve aparecer na embalagem.)`;}
+  const num=(whatsapp||DWPP).replace(/\D/g,'');
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`,'_blank');
+  // Decrementar estoque
+  const{products}=getData();
+  cart.forEach(item=>{const idx=products.findIndex(p=>p.code===item.code);if(idx!==-1){products[idx].stock=Math.max(0,products[idx].stock-item.qty);if(products[idx].stock===0)products[idx].available=false;}});
+  LS.set('cg_prods',products);cart=[];selPay=0;
+  document.getElementById('giftcb').checked=false;document.getElementById('giftflds').classList.remove('open');document.getElementById('giftmsg').value='';
+  updateCartCount();closeCart();renderStore();showToast('Pedido enviado!');
+}
+
+// ─── UI ───────────────────────────────────────
+function scrollP(){document.getElementById('colecao').scrollIntoView({behavior:'smooth'});}
+window.addEventListener('scroll',()=>{document.getElementById('sh').classList.toggle('scr',window.scrollY>50);});
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// Close modals on overlay click
+['pfm','cfm','pw-modal'].forEach(id=>{document.getElementById(id)?.addEventListener('click',function(e){if(e.target===this&&id!=='pw-modal')this.classList.remove('open');});});
+
+
+
+// ─── EXPORT / PUBLISH ─────────────────────────────
+function exportSite(){
+  const statusEl=document.getElementById('export-status');
+  if(statusEl)statusEl.textContent='Gerando arquivo...';
+  
+  // Snapshot current localStorage data into the HTML
+  const d=getData();
+  const snapshot={
+    cg_prods:d.products,
+    cg_cats:d.categories,
+    cg_pms:d.payments,
+    cg_wpp:d.whatsapp,
+    cg_ig:d.instagram,
+    cg_name:d.storeName,
+    cg_hdesc:d.heroDesc,
+    cg_fdesc:d.footerDesc,
+    cg_fhours:d.footerHours,
+    cg_floc:d.footerLoc,
+    cg_logo:d.logo||null,
+  };
+  
+  // Read current page source and inject a boot script with all data
+  // The boot script runs before init and pre-populates localStorage
+  const bootScript=`
+<script id="cg-snapshot">
+(function(){
+  var snap=${JSON.stringify(snapshot)};
+  for(var k in snap){if(snap[k]!==null)localStorage.setItem(k,JSON.stringify(snap[k]));}
+})();
+<\/script>`;
+  
+  // Fetch current page HTML
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',window.location.href,false);
+  try{
+    xhr.send();
+    var src=xhr.responseText;
+    // Remove any previous snapshot
+    src=src.replace(/<script id="cg-snapshot">[\s\S]*?<\/script>\n?/,'');
+    // Inject before </head>
+    src=src.replace('</head>',bootScript+'\n</head>');
+    var blob=new Blob([src],{type:'text/html;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='index.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    if(statusEl){
+      statusEl.innerHTML='<strong style="color:#3b6820;">✓ Arquivo gerado com sucesso!</strong><br>Agora envie o arquivo <strong>index.html</strong> ao Netlify conforme o Passo 2 acima.';
+    }
+    showToast('index.html baixado — envie ao Netlify para publicar.');
+  }catch(e){
+    // Fallback: generate from template without XHR (works when served locally)
+    if(statusEl){
+      statusEl.innerHTML='<strong style="color:var(--terra);">Atenção:</strong> para usar esta função o site precisa estar publicado no Netlify ou aberto via servidor local. Se abriu o arquivo direto pelo navegador (file://), use o método manual: exporte os dados abaixo e peça ao Claude uma nova versão com eles embutidos.';
+    }
+  }
+}
+
+// ─── SOCIAL LINKS ─────────────────────────────
+function updateSocialLinks(){
+  const{whatsapp,instagram}=getData();
+  const num=(whatsapp||DWPP).replace(/\D/g,'');
+  // WhatsApp FAB
+  const fab=document.getElementById('wpp-fab');
+  if(fab)fab.href='https://wa.me/'+num+'?text='+encodeURIComponent('Olá, Casa Gama! Gostaria de obter mais informações.');
+  // Instagram footer link
+  const iEl=document.getElementById('ig-social-link');
+  if(iEl){
+    if(instagram){iEl.href=instagram;iEl.style.display='';}
+    else{iEl.style.display='none';}
+  }
+}
+
+// Hash routing — painel secreto
+window.addEventListener('hashchange',checkHash);
+checkHash();
+
+// ─── INIT ─────────────────────────────────────
+migrateData();
+renderStore();
+updateSocialLinks();
+const{logo}=getData();if(logo)applyLogo(logo);
+</script>
+</body>
+</html>
