@@ -35,11 +35,17 @@ A loja pública da Casa Gama continua como aplicação separada do GAMA Hub: o H
 - Admin da loja fica dentro do GAMA Hub, e não em painel próprio da loja, para evitar duplicar gestão em dois lugares
 - Analytics: Umami self-hosted (gratuito, sem custo recorrente novo), usando o mesmo banco Postgres do Supabase que já serve o Hub
 
-**Ponto em aberto**: o modelo combinado depende de a loja usar o mesmo banco Supabase do Hub (para estoque, produtos e financeiro ficarem sincronizados). Por padrão, cada projeto novo do Lovable vem com seu próprio Lovable Cloud (banco separado). Falta confirmar, dentro do projeto da loja (menu de três pontinhos > Mais > Cloud), se ele está conectado ao mesmo projeto Supabase do Hub ou se criou um banco à parte.
+**Confirmado em 22/09/2026**: o projeto Casa Gama Shop no Lovable está com banco próprio, criado automaticamente, ainda vazio (0 tabelas). Ou seja, hoje ele não está ligado ao Supabase do Hub.
+
+Segundo a documentação oficial do Lovable, é possível apontar um projeto para o mesmo Supabase que outro projeto já usa (é um caso previsto, tipo app do cliente + painel admin usando o mesmo banco). Antes de fazer essa troca, atenção aos avisos da própria documentação:
+
+- Os dois projetos passam a ler e escrever nos mesmos dados, podem sobrescrever secrets um do outro e quebrar integrações um do outro se não houver cuidado
+- É preciso configurar bem as políticas de RLS para não vazar dado entre loja e Hub
+- O Lovable recomenda falar com o suporte deles (support@lovable.dev) para orientação de arquitetura nesse tipo de conexão, dado que o Hub já tem 122 tabelas em produção
 
 ### Ordem de execução combinada
 
-1. Confirmar se o projeto da loja no Lovable está no mesmo banco Supabase do Hub, ou conectar os dois
+1. Conectar o projeto da loja no Lovable ao mesmo projeto Supabase do Hub (hoje está em um banco separado e vazio), com cuidado nas políticas de RLS
 2. Migrar dados de produto e estoque do Firestore para esse banco
 3. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 4. Plugar o Umami por último
