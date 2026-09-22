@@ -37,29 +37,31 @@ A loja pública da Casa Gama continua como aplicação separada do GAMA Hub: o H
 
 **Confirmado em 22/09/2026**: o projeto Casa Gama Shop no Lovable está com banco próprio, criado automaticamente, ainda vazio (0 tabelas). Ou seja, hoje ele não está ligado ao Supabase do Hub.
 
-Segundo a documentação oficial do Lovable, é possível apontar um projeto para o mesmo Supabase que outro projeto já usa (é um caso previsto, tipo app do cliente + painel admin usando o mesmo banco). Antes de fazer essa troca, atenção aos avisos da própria documentação:
+### Arquitetura de conexão Hub / Loja (confirmado em 22/09/2026)
 
-- Os dois projetos passam a ler e escrever nos mesmos dados, podem sobrescrever secrets um do outro e quebrar integrações um do outro se não houver cuidado
-- É preciso configurar bem as políticas de RLS para não vazar dado entre loja e Hub
-- O Lovable recomenda falar com o suporte deles (support@lovable.dev) para orientação de arquitetura nesse tipo de conexão, dado que o Hub já tem 122 tabelas em produção
+Decisão: bancos separados (o Hub mantém seu Supabase, a loja mantém o dela), sem conexão direta entre os dois. A troca de dado é feita por sincronização, só do que for necessário (produto e estoque), nunca dando à loja acesso às 122 tabelas do Hub.
+
+Sentido Hub para loja, manual: cadastro de produto novo, edição (fotos, descrição) e ajuste de estoque feitos no Hub só chegam na loja quando alguém clica em um botão "Enviar para Casa Gama". Produto novo também passa por um botão de revisão manual antes de publicar, não vai direto pro ar.
+
+Sentido loja para Hub, em aberto: quando uma venda acontece na loja, o estoque cai automaticamente lá (ver seção de checkout abaixo). Falta definir se essa baixa volta pro Hub sozinha (automática, só nesse sentido específico) ou se alguém confere as vendas do dia e ajusta o estoque do Hub manualmente, no mesmo padrão de botão do outro sentido.
 
 ### Ordem de execução combinada
 
-1. Conectar o projeto da loja no Lovable ao mesmo projeto Supabase do Hub (hoje está em um banco separado e vazio), com cuidado nas políticas de RLS
-2. Migrar dados de produto e estoque do Firestore para esse banco
-3. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
-4. Plugar o Umami por último
+1. Migrar dados de produto e estoque do Firestore para uma estrutura de tabelas no banco Supabase próprio da loja (o que já existe vazio hoje)
+2. Montar a rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo e ajuste de estoque
+3. Definir e montar o caminho de volta (loja para Hub) depois de uma venda
+4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
+5. Plugar o Umami por último
 
 ### Checkout e baixa de estoque (confirmado em 22/09/2026)
 
 O checkout continua via WhatsApp, igual ao sistema atual: cliente monta o carrinho e envia o pedido pelo WhatsApp, sem pagamento online na hora.
 
-Decisão: baixa de estoque automática no momento em que o cliente envia o pedido, não por reserva temporária. Risco aceito pelas sócias: como o pagamento é combinado depois, por fora, se o cliente desistir ou não fechar a compra, o estoque fica reduzido indevidamente até alguém perceber e corrigir manualmente no Hub.
+Decisão: baixa de estoque automática no momento em que o cliente envia o pedido, não por reserva temporária. Essa baixa acontece no banco da própria loja. Risco aceito pelas sócias: como o pagamento é combinado depois, por fora, se o cliente desistir ou não fechar a compra, o estoque fica reduzido indevidamente até alguém perceber e corrigir manualmente.
 
 ### Ainda em aberto
 
-- Se a conexão da loja ao Supabase do Hub vai ser direta (Opção A: mesmo banco com RLS restringindo por tabela) ou por sincronização entre bancos separados (Opção B: loja mantém banco próprio, só troca produto e estoque)
-- Se a atualização de produto novo (cadastro, fotos, descrição) do Hub para a loja é automática ou passa por um botão de revisão manual antes de publicar
+- Se a baixa de estoque da venda volta pro Hub automaticamente ou se alguém ajusta manualmente, conferindo as vendas do dia
 
 ## Banco de dados (Supabase via Lovable Cloud)
 
