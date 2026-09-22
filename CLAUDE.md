@@ -47,8 +47,8 @@ Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoqu
 
 ### Ordem de execução combinada
 
-1. Migrar dados de produto e estoque do Firestore para uma estrutura de tabelas no banco Supabase próprio da loja (o que já existe vazio hoje)
-2. Montar a rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo e ajuste de estoque. Desenho técnico e os dois prompts prontos para colar no Lovable (loja e Hub) em `docs/sincronizacao-hub-loja.md`, com o código de referência da Edge Function em `supabase/functions/sync-produtos/index.ts`
+1. Migrar dados de produto e estoque do Firestore para as tabelas reais da loja (ver "Estrutura real confirmada" abaixo)
+2. **Concluído em 22/09/2026**: rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo (com área de revisão e botão "Publicar na loja") e ajuste de estoque. Desenho original e os prompts usados em `docs/sincronizacao-hub-loja.md`. Do lado da loja, a Edge Function real ficou em `POST /api/public/sync-produtos`, protegida por header `x-sync-secret`. O segredo de sincronização foi gerado nesta sessão e cadastrado nos dois projetos (Lovable Cloud > Secrets), não fica salvo em nenhum arquivo deste repositório
 3. Montar a rotina automática de volta (loja para Hub) para refletir a baixa de estoque de cada venda
 4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 5. Plugar o Umami por último
@@ -61,9 +61,16 @@ Campos encontrados: produto (código interno, código do fornecedor Mart Collect
 
 Lacuna encontrada: o sistema legado não grava nenhum histórico de pedido, só desconta o estoque na hora e manda a mensagem pro WhatsApp. Como a baixa de estoque agora precisa voltar pro Hub automaticamente, foi criada uma tabela de pedido nova (que não existia antes) para registrar o que gerou cada baixa.
 
-Proposta de estrutura de tabelas para o banco da loja em `supabase/schema.sql`, pronta para colar no SQL editor do Supabase quando o banco da loja estiver definido: categorias, produtos, formas_pagamento, configuracoes_loja, pedidos, pedido_itens, com RLS já esboçado (leitura pública de vitrine, escrita restrita).
+Proposta original de estrutura de tabelas em `supabase/schema.sql`. `formas_pagamento`, `configuracoes_loja`, `pedidos` e `pedido_itens` continuam só como proposta, ainda não confirmadas contra o que existe de verdade no Lovable.
 
-Os 90 produtos que hoje estão no `INIT_PRODS` do `casa-gama-v7.html` já foram convertidos para esse formato novo, em `supabase/seed_produtos.sql`. Rodar depois do `schema.sql`, no banco próprio da loja.
+### Estrutura real confirmada (22/09/2026)
+
+Ao montar a sincronização, o Lovable revelou que as tabelas de produto já existiam no projeto da loja, criadas durante a construção da vitrine, com nomes diferentes do que eu tinha imaginado no `schema.sql`:
+
+- `casagama_produtos` (não `produtos`): campos `codigo`, `nome`, `categoria`, `preco`, `imagem_url`, `quantidade_estoque` (não `estoque`), `ativo` (não `disponivel`). Sem campo `codigo_fornecedor` (o código do fornecedor Mart Collection não é guardado na loja, só serve de referência interna no cadastro)
+- `casagama_categorias` (não `categorias`): lista de nomes de categoria
+
+`supabase/schema.sql` e `supabase/seed_produtos.sql` já foram corrigidos para usar esses nomes reais. Os 90 produtos do `INIT_PRODS` do `casa-gama-v7.html` estão convertidos em `supabase/seed_produtos.sql`, pronto para rodar contra o banco real da loja.
 
 ### Checkout e baixa de estoque (confirmado em 22/09/2026)
 

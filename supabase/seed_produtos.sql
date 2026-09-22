@@ -1,7 +1,9 @@
--- Casa Gama - migracao dos 90 produtos do casa-gama-v7.html (INIT_PRODS) para o schema novo
--- Rodar depois de supabase/schema.sql, no banco proprio da loja
+-- Casa Gama - migracao dos 90 produtos do casa-gama-v7.html (INIT_PRODS) para as
+-- tabelas reais da loja (casagama_produtos / casagama_categorias, confirmadas em
+-- 22/09/2026). O codigo_fornecedor de cada produto (referencia da Mart Collection)
+-- fica nos dados abaixo mas nao e gravado, porque essa coluna nao existe na loja.
 
-insert into categorias (nome) values
+insert into casagama_categorias (nome) values
   ('Porta-retratos'),
   ('Livros-caixa'),
   ('Vasos'),
@@ -15,8 +17,8 @@ insert into categorias (nome) values
   ('Colares/Esculturas')
 on conflict (nome) do nothing;
 
-insert into produtos (codigo, codigo_fornecedor, nome, categoria_id, preco, estoque, imagem_url, disponivel)
-select v.codigo, v.codigo_fornecedor, v.nome, c.id, v.preco, v.estoque, nullif(v.imagem_url, ''), v.disponivel
+insert into casagama_produtos (codigo, nome, categoria, preco, quantidade_estoque, imagem_url, ativo)
+select v.codigo, v.nome, v.categoria_nome, v.preco, v.estoque, nullif(v.imagem_url, ''), v.disponivel
 from (values
   ('CG-PR-001','13061','Porta-Retrato em MDF - 20x25','Porta-retratos',39.35,6,'',true),
   ('CG-LC-001','13592','Livro-Caixa MDF/Linho - P','Livros-caixa',74.04,1,'',true),
@@ -109,5 +111,4 @@ from (values
   ('CG-KB-002','21769','Kit Cerâmica Banheiro - 3 Pcs','Kits Banheiro',112.41,1,'',true),
   ('CG-KT-007','22425','Kit Vasos Cerâmica 3 Pcs - B','Kits',172.92,1,'',true)
 ) as v(codigo, codigo_fornecedor, nome, categoria_nome, preco, estoque, imagem_url, disponivel)
-join categorias c on c.nome = v.categoria_nome
 on conflict (codigo) do nothing;

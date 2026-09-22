@@ -1,22 +1,28 @@
--- Casa Gama - estrutura inicial do banco da loja (Supabase, projeto proprio, separado do Hub)
--- Baseado no modelo de dados do casa-gama-v7.html (legado)
+-- Casa Gama - estrutura do banco da loja (Supabase, projeto proprio, separado do Hub)
+--
+-- As tabelas casagama_produtos e casagama_categorias abaixo refletem o que
+-- ja existe de verdade no projeto Casa Gama Shop (criadas pelo Lovable
+-- durante a construcao da vitrine, confirmado em 22/09/2026). NAO rodar o
+-- create table dessas duas, elas ja existem, isso aqui e so documentacao
+-- da estrutura real. formas_pagamento, configuracoes_loja, pedidos e
+-- pedido_itens ainda sao proposta, ainda nao confirmadas contra o que o
+-- Lovable gerou.
 
-create table categorias (
+create table casagama_categorias (
   id uuid primary key default gen_random_uuid(),
   nome text not null unique,
   criado_em timestamptz not null default now()
 );
 
-create table produtos (
+create table casagama_produtos (
   id uuid primary key default gen_random_uuid(),
   codigo text not null unique,              -- ex: CG-PR-001
-  codigo_fornecedor text,                   -- codigo do produto na Mart Collection
   nome text not null,
-  categoria_id uuid references categorias(id),
+  categoria text,                           -- nome da categoria (nao e FK confirmada)
   preco numeric(10,2) not null,
-  estoque integer not null default 0,
+  quantidade_estoque integer not null default 0,
   imagem_url text,
-  disponivel boolean not null default true,
+  ativo boolean not null default true,
   criado_em timestamptz not null default now(),
   atualizado_em timestamptz not null default now()
 );
@@ -59,7 +65,7 @@ create table pedidos (
 create table pedido_itens (
   id uuid primary key default gen_random_uuid(),
   pedido_id uuid references pedidos(id) on delete cascade,
-  produto_id uuid references produtos(id),
+  produto_id uuid references casagama_produtos(id),
   codigo_produto text not null,             -- copia do codigo no momento da venda
   nome_produto text not null,               -- copia do nome no momento da venda
   preco_unitario numeric(10,2) not null,
@@ -68,15 +74,15 @@ create table pedido_itens (
 
 -- RLS: vitrine publica pode ler produtos, categorias e formas de pagamento.
 -- Escrita fica restrita (sincronizacao Hub->loja usa a service role, nao a chave publica).
-alter table categorias enable row level security;
-alter table produtos enable row level security;
+alter table casagama_categorias enable row level security;
+alter table casagama_produtos enable row level security;
 alter table formas_pagamento enable row level security;
 alter table configuracoes_loja enable row level security;
 alter table pedidos enable row level security;
 alter table pedido_itens enable row level security;
 
-create policy "leitura publica de categorias" on categorias for select using (true);
-create policy "leitura publica de produtos" on produtos for select using (true);
+create policy "leitura publica de categorias" on casagama_categorias for select using (true);
+create policy "leitura publica de produtos" on casagama_produtos for select using (true);
 create policy "leitura publica de formas de pagamento" on formas_pagamento for select using (true);
 create policy "leitura publica de configuracoes" on configuracoes_loja for select using (true);
 

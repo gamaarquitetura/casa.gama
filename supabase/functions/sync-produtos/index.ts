@@ -1,6 +1,13 @@
 // Casa Gama - recebe produtos/estoque enviados pelo Hub e atualiza o banco da loja.
 // Protegida por header x-sync-secret, comparado com o secret SYNC_SECRET
 // guardado nas Secrets deste projeto (Cloud > Secrets).
+//
+// REFERENCIA HISTORICA: a function real foi criada pelo Lovable em
+// 22/09/2026, gravando em casagama_produtos / casagama_categorias, com
+// quantidade_estoque no lugar de estoque, ativo no lugar de disponivel, e
+// sem codigo_fornecedor (coluna que nao existe na loja). O codigo abaixo
+// usa os nomes originalmente propostos (produtos/categorias/estoque/
+// disponivel) e serve so de registro do desenho, nao e o que esta no ar.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
