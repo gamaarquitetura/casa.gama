@@ -43,13 +43,13 @@ Decisão: bancos separados (o Hub mantém seu Supabase, a loja mantém o dela), 
 
 Sentido Hub para loja, manual: cadastro de produto novo, edição (fotos, descrição) e ajuste de estoque feitos no Hub só chegam na loja quando alguém clica em um botão "Enviar para Casa Gama". Produto novo também passa por um botão de revisão manual antes de publicar, não vai direto pro ar.
 
-Sentido loja para Hub, em aberto: quando uma venda acontece na loja, o estoque cai automaticamente lá (ver seção de checkout abaixo). Falta definir se essa baixa volta pro Hub sozinha (automática, só nesse sentido específico) ou se alguém confere as vendas do dia e ajusta o estoque do Hub manualmente, no mesmo padrão de botão do outro sentido.
+Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoque cai lá, essa baixa volta pro Hub sozinha, sem precisar de botão nem conferência manual. É o único trecho da sincronização que roda nos dois sentidos sem ação humana, porque reflete uma venda já feita.
 
 ### Ordem de execução combinada
 
 1. Migrar dados de produto e estoque do Firestore para uma estrutura de tabelas no banco Supabase próprio da loja (o que já existe vazio hoje)
 2. Montar a rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo e ajuste de estoque
-3. Definir e montar o caminho de volta (loja para Hub) depois de uma venda
+3. Montar a rotina automática de volta (loja para Hub) para refletir a baixa de estoque de cada venda
 4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 5. Plugar o Umami por último
 
@@ -57,11 +57,7 @@ Sentido loja para Hub, em aberto: quando uma venda acontece na loja, o estoque c
 
 O checkout continua via WhatsApp, igual ao sistema atual: cliente monta o carrinho e envia o pedido pelo WhatsApp, sem pagamento online na hora.
 
-Decisão: baixa de estoque automática no momento em que o cliente envia o pedido, não por reserva temporária. Essa baixa acontece no banco da própria loja. Risco aceito pelas sócias: como o pagamento é combinado depois, por fora, se o cliente desistir ou não fechar a compra, o estoque fica reduzido indevidamente até alguém perceber e corrigir manualmente.
-
-### Ainda em aberto
-
-- Se a baixa de estoque da venda volta pro Hub automaticamente ou se alguém ajusta manualmente, conferindo as vendas do dia
+Decisão: baixa de estoque automática no momento em que o cliente envia o pedido, não por reserva temporária. Essa baixa acontece no banco da própria loja e volta pro Hub automaticamente. Risco aceito pelas sócias: como o pagamento é combinado depois, por fora, se o cliente desistir ou não fechar a compra, o estoque fica reduzido indevidamente até alguém perceber e corrigir manualmente.
 
 ## Banco de dados (Supabase via Lovable Cloud)
 
