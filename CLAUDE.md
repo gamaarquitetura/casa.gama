@@ -56,6 +56,16 @@ Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoqu
 Ao testar a sincronização, descobrimos que a vitrine da loja nunca usou o banco próprio do projeto Casa Gama Shop: o código lia uma variável `CASAGAMA_SUPABASE_URL`, configurada manualmente por quem construiu o site antes desta migração, apontando direto para o banco de produção do Hub (`bqiseblawwjkehulzztd`). O banco próprio do Shop (`xpdllzmxewrcjdwvxmuo`) ficou vazio e sem uso o tempo todo. Confirmado direto no código-fonte (`src/lib/supabase.server.ts` e `src/routes/api/public/sync-produtos.ts`), depois de duas respostas contraditórias dos Lovable AI do Hub e da loja sobre se os bancos eram o mesmo ou não.
 
 Isso quebrava o isolamento decidido: a loja pública tinha acesso ao mesmo banco que guarda financeiro e notas fiscais do escritório, sem nenhuma separação. Decisão confirmada pelas sócias: migrar a loja para o banco próprio, restaurando o isolamento (mantendo a Opção B já decidida, em vez de aceitar o compartilhamento que estava acontecendo de fato). Prompt de migração completo em `docs/sincronizacao-hub-loja.md`, seção "Correção crítica".
+
+**Migração concluída e validada em 23/09/2026.** Evidências conferidas antes de aprovar:
+
+- Catálogo criado no banco próprio da loja (`xpdllzmxewrcjdwvxmuo`): `casagama_produtos` com 92 linhas (92 ativos, 32 com estoque), `casagama_categorias` com 11 linhas, copiados do Hub
+- Isolamento comprovado por teste de sentinela: produto criado só no banco da loja apareceu na vitrine; consulta ao banco do Hub não encontrou esse produto, confirmando que a vitrine não lê mais de lá
+- Vitrine testada ao vivo: 92 peças, 32 disponíveis, sem erros. Contador reagiu em tempo real ao criar e remover o produto sentinela
+- Sincronização testada contra o banco novo: envio com sucesso, chave errada continua sendo recusada com 401
+- Secrets antigos removidos do Casa Gama Shop (`CASAGAMA_SUPABASE_URL`, `CASAGAMA_SUPABASE_SERVICE_ROLE_KEY`, `CASAGAMA_SUPABASE_PUBLISHABLE_KEY`), não são mais usados por nenhum código
+
+A loja hoje não tem mais nenhum contato com o banco do Hub. `sync-produtos` grava no banco próprio da loja usando a chave de serviço automática do próprio projeto, sem depender de secret manual.
 4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 5. Plugar o Umami por último
 
