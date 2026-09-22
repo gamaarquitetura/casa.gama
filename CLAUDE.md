@@ -48,7 +48,7 @@ Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoqu
 ### Ordem de execução combinada
 
 1. Migrar dados de produto e estoque do Firestore para uma estrutura de tabelas no banco Supabase próprio da loja (o que já existe vazio hoje)
-2. Montar a rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo e ajuste de estoque
+2. Montar a rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo e ajuste de estoque. Desenho técnico e os dois prompts prontos para colar no Lovable (loja e Hub) em `docs/sincronizacao-hub-loja.md`, com o código de referência da Edge Function em `supabase/functions/sync-produtos/index.ts`
 3. Montar a rotina automática de volta (loja para Hub) para refletir a baixa de estoque de cada venda
 4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 5. Plugar o Umami por último
