@@ -30,16 +30,19 @@ A loja pública da Casa Gama continua como aplicação separada do GAMA Hub: o H
 
 ### Decisões técnicas confirmadas
 
-- Sair do Netlify como plataforma de deploy
-- Manter o Lovable apenas para o GAMA Hub (não para esta loja)
-- Nova loja da Casa Gama será construída com Claude Code (não mais com Codex)
+- Nova loja da Casa Gama sendo construída no Lovable (desenvolvimento já iniciado). Projeto: lovable.dev/projects/c95ebbd0-58f5-4b53-b69c-cfe9183f7f73
+- Hospedagem passa a ser o próprio publish do Lovable, não mais Netlify. A decisão anterior de sair do Netlify para Vercel ou Cloudflare Pages fica sem efeito, já que o Lovable resolve a hospedagem nativamente
+- Admin da loja fica dentro do GAMA Hub, e não em painel próprio da loja, para evitar duplicar gestão em dois lugares
 - Analytics: Umami self-hosted (gratuito, sem custo recorrente novo), usando o mesmo banco Postgres do Supabase que já serve o Hub
+
+**Ponto em aberto**: o modelo combinado depende de a loja usar o mesmo banco Supabase do Hub (para estoque, produtos e financeiro ficarem sincronizados). Por padrão, cada projeto novo do Lovable vem com seu próprio Lovable Cloud (banco separado). Falta confirmar, dentro do projeto da loja (menu de três pontinhos > Mais > Cloud), se ele está conectado ao mesmo projeto Supabase do Hub ou se criou um banco à parte.
 
 ### Ordem de execução combinada
 
-1. Migrar dados de produto e estoque do Firestore para o Supabase
-2. Construir o site da loja
-3. Plugar o Umami por último
+1. Confirmar se o projeto da loja no Lovable está no mesmo banco Supabase do Hub, ou conectar os dois
+2. Migrar dados de produto e estoque do Firestore para esse banco
+3. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
+4. Plugar o Umami por último
 
 ## Banco de dados (Supabase via Lovable Cloud)
 
