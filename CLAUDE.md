@@ -63,6 +63,8 @@ Lacuna encontrada: o sistema legado não grava nenhum histórico de pedido, só 
 
 Proposta de estrutura de tabelas para o banco da loja em `supabase/schema.sql`, pronta para colar no SQL editor do Supabase quando o banco da loja estiver definido: categorias, produtos, formas_pagamento, configuracoes_loja, pedidos, pedido_itens, com RLS já esboçado (leitura pública de vitrine, escrita restrita).
 
+Os 90 produtos que hoje estão no `INIT_PRODS` do `casa-gama-v7.html` já foram convertidos para esse formato novo, em `supabase/seed_produtos.sql`. Rodar depois do `schema.sql`, no banco próprio da loja.
+
 ### Checkout e baixa de estoque (confirmado em 22/09/2026)
 
 O checkout continua via WhatsApp, igual ao sistema atual: cliente monta o carrinho e envia o pedido pelo WhatsApp, sem pagamento online na hora.
