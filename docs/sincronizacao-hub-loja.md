@@ -129,3 +129,74 @@ necessários.
 Vá confirmando cada etapa antes de aplicar a próxima, e me avise se
 algo ficar ambíguo.
 ```
+
+# Sincronização loja para Hub (baixa de estoque automática)
+
+Como funciona: no momento em que o cliente finaliza o pedido pelo WhatsApp, a loja já desconta o estoque no próprio banco dela (decisão já confirmada, sem reserva temporária). Nesse mesmo instante, a loja registra o pedido num histórico (que não existia antes) e manda a lista de itens vendidos para um endereço do Hub, que desconta o mesmo estoque na tabela dele. Não tem botão, não depende de ninguém conferir nada. Se a chamada falhar, o pedido fica marcado como não sincronizado e uma rotina programada tenta de novo sozinha.
+
+Duas peças, uma em cada projeto. Monte a Peça 2 (Hub) primeiro, porque a Peça 1 (loja) precisa da URL que só existe depois da função do Hub publicada.
+
+## Peça 1: histórico de pedido e envio automático, no projeto da loja
+
+Antes de montar, criar dois secrets no projeto da loja (Cloud > Secrets):
+
+- `HUB_VENDA_URL`: o endereço da Edge Function do Hub que vai receber a venda (só existe depois da Peça 2 estar publicada)
+- `VENDA_SYNC_SECRET`: `79b49649b5fb9026de6e213fbf44575e3d68783c6a5f475cc1a006edce06c953`
+
+### Prompt para colar no Lovable (projeto Casa Gama Shop)
+
+```
+Crie duas tabelas no banco próprio deste projeto:
+
+casagama_pedidos: id, criado_em, valor_base, valor_final,
+forma_pagamento, presente (boolean), mensagem_presente,
+sincronizado_hub (boolean, default false)
+
+casagama_pedido_itens: id, pedido_id (referência a casagama_pedidos),
+codigo_produto, nome_produto, preco_unitario, quantidade
+
+No fluxo de finalizar pedido (o mesmo que hoje monta a mensagem do
+WhatsApp e desconta o estoque local), adicione, no mesmo momento:
+
+1. Gravar o pedido em casagama_pedidos e os itens em
+   casagama_pedido_itens.
+2. Enviar um POST para a URL guardada no secret HUB_VENDA_URL, com
+   header x-venda-secret preenchido com o secret VENDA_SYNC_SECRET, e
+   corpo { pedido_id, itens: [{ codigo, quantidade }] }.
+3. Se a resposta for de sucesso, marcar sincronizado_hub como true
+   nesse pedido. Se falhar (erro de rede, timeout, resposta de erro),
+   deixar sincronizado_hub como false, sem travar a finalização do
+   pedido para o cliente.
+
+Crie também um Job (Cloud > Jobs) que roda a cada 15 minutos: busca
+pedidos com sincronizado_hub false, reenvia cada um para o mesmo
+endereço, e marca como sincronizado quando der certo.
+```
+
+## Peça 2: recebimento da venda, no projeto do Hub
+
+Antes de montar, criar um secret no projeto do Hub (Cloud > Secrets):
+
+- `VENDA_SYNC_SECRET`: o mesmo valor de cima, `79b49649b5fb9026de6e213fbf44575e3d68783c6a5f475cc1a006edce06c953`
+
+### Prompt para colar no Lovable (projeto do Hub)
+
+```
+Crie uma Edge Function chamada registrar-venda que recebe POST com o
+corpo { pedido_id, itens: [{ codigo, quantidade }] }.
+
+A função deve:
+1. Verificar o header x-venda-secret e comparar com o secret
+   VENDA_SYNC_SECRET. Se não bater, retornar 401.
+2. Para cada item, localizar o produto em casagama_produtos pelo
+   codigo e descontar quantidade_estoque pela quantidade vendida, sem
+   deixar o valor ficar negativo (mínimo zero). Se o estoque chegar a
+   zero, marcar ativo como false.
+3. Retornar um JSON com { atualizados, erros }, contando quantos itens
+   foram descontados com sucesso e uma lista de erros por código de
+   produto, se houver (por exemplo, produto não encontrado).
+```
+
+## Depois
+
+Assim que a Peça 2 estiver publicada no Hub, copie a URL da função `registrar-venda` para o secret `HUB_VENDA_URL` no projeto da loja, antes de publicar a Peça 1. Teste com uma venda de exemplo antes de considerar pronto: confirme que o estoque caiu nos dois bancos e que o pedido de teste ficou marcado como sincronizado.

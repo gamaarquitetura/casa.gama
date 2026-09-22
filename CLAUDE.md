@@ -49,7 +49,7 @@ Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoqu
 
 1. Migrar dados de produto e estoque do Firestore para as tabelas reais da loja (ver "Estrutura real confirmada" abaixo)
 2. **Concluído em 22/09/2026, corrigido em 23/09/2026**: rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo (com área de revisão e botão "Publicar na loja") e ajuste de estoque. Desenho original e os prompts usados em `docs/sincronizacao-hub-loja.md`. Do lado da loja, a Edge Function real ficou em `POST /api/public/sync-produtos`, protegida por header `x-sync-secret`. O segredo de sincronização foi gerado nesta sessão e cadastrado nos dois projetos (Lovable Cloud > Secrets), não fica salvo em nenhum arquivo deste repositório
-3. Montar a rotina automática de volta (loja para Hub) para refletir a baixa de estoque de cada venda
+3. **Em andamento em 23/09/2026**: rotina automática de volta (loja para Hub) para refletir a baixa de estoque de cada venda. Desenho e prompts em `docs/sincronizacao-hub-loja.md`, seção "Sincronização loja para Hub". Cria histórico de pedido na loja (`casagama_pedidos`/`casagama_pedido_itens`, que não existia antes), envia a venda pro Hub via Edge Function `registrar-venda` protegida por header `x-venda-secret`, com reenvio automático por Job programado se a primeira tentativa falhar. Segredo gerado nesta sessão, cadastrado nos dois projetos, não fica salvo em arquivo deste repositório
 
 ### Falha crítica encontrada e correção (23/09/2026)
 
