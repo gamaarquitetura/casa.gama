@@ -50,6 +50,17 @@ Segundo a documentação oficial do Lovable, é possível apontar um projeto par
 3. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 4. Plugar o Umami por último
 
+### Checkout e baixa de estoque (confirmado em 22/09/2026)
+
+O checkout continua via WhatsApp, igual ao sistema atual: cliente monta o carrinho e envia o pedido pelo WhatsApp, sem pagamento online na hora.
+
+Decisão: baixa de estoque automática no momento em que o cliente envia o pedido, não por reserva temporária. Risco aceito pelas sócias: como o pagamento é combinado depois, por fora, se o cliente desistir ou não fechar a compra, o estoque fica reduzido indevidamente até alguém perceber e corrigir manualmente no Hub.
+
+### Ainda em aberto
+
+- Se a conexão da loja ao Supabase do Hub vai ser direta (Opção A: mesmo banco com RLS restringindo por tabela) ou por sincronização entre bancos separados (Opção B: loja mantém banco próprio, só troca produto e estoque)
+- Se a atualização de produto novo (cadastro, fotos, descrição) do Hub para a loja é automática ou passa por um botão de revisão manual antes de publicar
+
 ## Banco de dados (Supabase via Lovable Cloud)
 
 O GAMA Hub não usa uma conta Supabase externa com login próprio em supabase.com. Ele usa o Lovable Cloud, backend nativo do Lovable construído sobre Supabase, gerenciado dentro do painel do Lovable (menu de três pontinhos > Mais > Cloud). Lá estão Database (122 tabelas), Users, Storage (8 buckets), Secrets, Edge functions, SQL editor e Logs.
