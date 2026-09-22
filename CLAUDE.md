@@ -48,8 +48,14 @@ Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoqu
 ### Ordem de execução combinada
 
 1. Migrar dados de produto e estoque do Firestore para as tabelas reais da loja (ver "Estrutura real confirmada" abaixo)
-2. **Concluído em 22/09/2026**: rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo (com área de revisão e botão "Publicar na loja") e ajuste de estoque. Desenho original e os prompts usados em `docs/sincronizacao-hub-loja.md`. Do lado da loja, a Edge Function real ficou em `POST /api/public/sync-produtos`, protegida por header `x-sync-secret`. O segredo de sincronização foi gerado nesta sessão e cadastrado nos dois projetos (Lovable Cloud > Secrets), não fica salvo em nenhum arquivo deste repositório
+2. **Concluído em 22/09/2026, corrigido em 23/09/2026**: rotina de sincronização Hub para loja (botão "Enviar para Casa Gama"), cobrindo produto novo (com área de revisão e botão "Publicar na loja") e ajuste de estoque. Desenho original e os prompts usados em `docs/sincronizacao-hub-loja.md`. Do lado da loja, a Edge Function real ficou em `POST /api/public/sync-produtos`, protegida por header `x-sync-secret`. O segredo de sincronização foi gerado nesta sessão e cadastrado nos dois projetos (Lovable Cloud > Secrets), não fica salvo em nenhum arquivo deste repositório
 3. Montar a rotina automática de volta (loja para Hub) para refletir a baixa de estoque de cada venda
+
+### Falha crítica encontrada e correção (23/09/2026)
+
+Ao testar a sincronização, descobrimos que a vitrine da loja nunca usou o banco próprio do projeto Casa Gama Shop: o código lia uma variável `CASAGAMA_SUPABASE_URL`, configurada manualmente por quem construiu o site antes desta migração, apontando direto para o banco de produção do Hub (`bqiseblawwjkehulzztd`). O banco próprio do Shop (`xpdllzmxewrcjdwvxmuo`) ficou vazio e sem uso o tempo todo. Confirmado direto no código-fonte (`src/lib/supabase.server.ts` e `src/routes/api/public/sync-produtos.ts`), depois de duas respostas contraditórias dos Lovable AI do Hub e da loja sobre se os bancos eram o mesmo ou não.
+
+Isso quebrava o isolamento decidido: a loja pública tinha acesso ao mesmo banco que guarda financeiro e notas fiscais do escritório, sem nenhuma separação. Decisão confirmada pelas sócias: migrar a loja para o banco próprio, restaurando o isolamento (mantendo a Opção B já decidida, em vez de aceitar o compartilhamento que estava acontecendo de fato). Prompt de migração completo em `docs/sincronizacao-hub-loja.md`, seção "Correção crítica".
 4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 5. Plugar o Umami por último
 

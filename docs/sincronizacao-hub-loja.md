@@ -68,3 +68,64 @@ produtos já existentes.
 ## Depois
 
 Com essas duas peças no ar, o fluxo manual já funciona: cadastra ou ajusta produto no Hub, clica em enviar, a loja atualiza. Falta o caminho de volta (loja para Hub, automático, refletindo baixa de estoque de cada venda), que é o próximo passo da migração.
+
+## Correção crítica: loja estava lendo direto do banco do Hub (23/09/2026)
+
+Ao testar a Peça 1, descobrimos que a vitrine da loja nunca usou o banco próprio do projeto Casa Gama Shop. O código lia `CASAGAMA_SUPABASE_URL`, uma variável configurada manualmente por quem construiu o site antes desta migração, apontando direto para o banco do Hub (`bqiseblawwjkehulzztd`). O banco próprio do Shop (`xpdllzmxewrcjdwvxmuo`) ficou vazio e sem uso o tempo todo. Confirmado direto no código-fonte (`src/lib/supabase.server.ts` e `src/routes/api/public/sync-produtos.ts`), não por suposição.
+
+Isso quebrava o isolamento decidido (loja separada do banco de produção do escritório, sem acesso ao financeiro e outras tabelas sensíveis). Decisão: migrar a loja para o banco próprio, restaurando o isolamento.
+
+### Prompt de migração (colar no Lovable, projeto Casa Gama Shop)
+
+```
+Vamos corrigir um problema de arquitetura: esta loja está lendo o
+catálogo direto do banco de produção do Hub (bqiseblawwjkehulzztd),
+através da variável CASAGAMA_SUPABASE_URL, em vez de usar o banco
+próprio deste projeto (xpdllzmxewrcjdwvxmuo, hoje vazio). Isso expõe a
+loja pública ao mesmo banco que guarda financeiro e notas fiscais do
+escritório, o que não deveria acontecer.
+
+Preciso que você faça a migração para isolar a loja, nesta ordem:
+
+1. Criar a estrutura no banco próprio
+No banco próprio deste projeto (xpdllzmxewrcjdwvxmuo), crie as tabelas
+casagama_produtos e casagama_categorias, com a mesma estrutura já
+usada hoje:
+- casagama_produtos: codigo, nome, categoria, preco, imagem_url,
+  quantidade_estoque, ativo
+- casagama_categorias: nome
+
+2. Copiar os dados atuais
+Copie os 92 produtos e as categorias que estão hoje no banco do Hub
+para essas tabelas novas, no banco próprio. Confira que os 92 produtos
+e todas as categorias vieram completos.
+
+3. Configurar RLS no banco próprio
+Leitura pública liberada em casagama_produtos e casagama_categorias (a
+vitrine precisa ler sem login). Escrita restrita à chave de serviço
+(nenhuma escrita pela chave pública).
+
+4. Trocar a conexão da vitrine
+Em src/lib/supabase.server.ts, troque a leitura de
+CASAGAMA_SUPABASE_URL para usar o banco próprio deste projeto (a
+mesma URL que SUPABASE_SERVICE_ROLE_KEY automática já aponta), no
+lugar da URL do Hub.
+
+5. Trocar a conexão da função de sincronização
+Em src/routes/api/public/sync-produtos.ts, faça o mesmo ajuste: usar o
+banco próprio e a chave de serviço automática deste projeto, em vez de
+depender de um secret manual.
+
+6. Testar antes de limpar
+Depois de trocar, teste a vitrine e teste um envio de produto via
+sincronização, para confirmar que tudo funciona com o banco novo,
+antes de mexer em qualquer coisa do Hub.
+
+7. Só então, limpar o que sobrou
+Remova a variável antiga CASAGAMA_SUPABASE_URL (a que apontava pro
+Hub) e o secret CASAGAMA_SUPABASE_SERVICE_ROLE_KEY, que deixam de ser
+necessários.
+
+Vá confirmando cada etapa antes de aplicar a próxima, e me avise se
+algo ficar ambíguo.
+```
