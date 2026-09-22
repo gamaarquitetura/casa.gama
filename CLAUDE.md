@@ -53,6 +53,16 @@ Sentido loja para Hub, automático: quando uma venda acontece na loja e o estoqu
 4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
 5. Plugar o Umami por último
 
+### Modelo de dados mapeado (22/09/2026)
+
+Levantamento feito a partir do `casa-gama-v7.html`, que hoje guarda os dados no `localStorage` do navegador (não fala direto com o Firestore, é uma ferramenta de gerar site estático), mas usa o mesmo modelo de campos da versão viva.
+
+Campos encontrados: produto (código interno, código do fornecedor Mart Collection, nome, categoria, preço, estoque, imagem, disponível), categoria, forma de pagamento (nome, percentual de desconto/acréscimo), configurações da loja (WhatsApp, Instagram, textos, horário, localização).
+
+Lacuna encontrada: o sistema legado não grava nenhum histórico de pedido, só desconta o estoque na hora e manda a mensagem pro WhatsApp. Como a baixa de estoque agora precisa voltar pro Hub automaticamente, foi criada uma tabela de pedido nova (que não existia antes) para registrar o que gerou cada baixa.
+
+Proposta de estrutura de tabelas para o banco da loja em `supabase/schema.sql`, pronta para colar no SQL editor do Supabase quando o banco da loja estiver definido: categorias, produtos, formas_pagamento, configuracoes_loja, pedidos, pedido_itens, com RLS já esboçado (leitura pública de vitrine, escrita restrita).
+
 ### Checkout e baixa de estoque (confirmado em 22/09/2026)
 
 O checkout continua via WhatsApp, igual ao sistema atual: cliente monta o carrinho e envia o pedido pelo WhatsApp, sem pagamento online na hora.
