@@ -89,6 +89,17 @@ A loja hoje não tem mais nenhum contato com o banco do Hub. `sync-produtos` gra
 
    **Decisão de filtro da vitrine (24/09/2026)**: diferente do sistema antigo (que misturava disponível e indisponível em toda tela). Aba "Todos" mostra só produtos disponíveis. Dentro de cada categoria específica (Bandejas, Caixas, etc.), disponíveis e indisponíveis aparecem juntos, indisponível com badge e botão "Avisar-me". Contador "X peças · Y disponíveis" se ajusta: em "Todos", X = Y (só disponíveis); dentro de categoria, X = total da categoria, Y = só disponíveis dela.
 
+   **Precificação de produto novo, a partir da nota fiscal (24/09/2026)**: levantamento no Hub confirmou que a lógica desejada já existe pronta, em `src/routes/casa-gama.notas-fiscais.tsx`, sem precisar de desenvolvimento novo:
+   - `frete_rateado`: proporcional ao valor de compra de cada item na nota (método "valor", padrão), com opção alternativa por quantidade. Sem fator fixo tipo o antigo ×1,03 do sistema legado, que não existe mais aqui
+   - `custo_minimo` = preco_compra + imposto + frete_rateado
+   - `preco_sugerido` = custo_minimo × (1 + margem_percentual / 100)
+   - Arredondamento só de centavos (padrão de qualquer valor em dinheiro), sem arredondamento psicológico tipo terminar em ",90"
+   - Margem nasce pré-preenchida com o valor de `margem_minima_alerta` (hoje 30%, em `casagama_config`), mas é editável por item, não é uma trava
+   - Tela "Conferência de Preços" só revisa e publica (publicar = atualiza o preço no catálogo e grava no histórico, na mesma operação), não recalcula nada
+   - `casagama_produtos_historico_preco` já grava preço anterior, novo, quem alterou, quando, e liga ao item da nota que originou a mudança, quando aplicável
+
+   Pendente: lançar uma nota fiscal real na tela para validar na prática antes de considerar esse fluxo pronto pro uso do dia a dia.
+
    **Teste manual real do WhatsApp, feito pelas sócias (24/09/2026): bem-sucedido.** Pedido real com CG-BD-001 pelo site publicado, WhatsApp abriu certinho no navegador.
 
    **URL publicada da loja**: `https://casa-gama-charm.lovable.app`
