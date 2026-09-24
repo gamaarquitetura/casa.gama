@@ -1,6 +1,6 @@
 # Casa Gama - Contexto do Projeto
 
-Documento de referência para desenvolvimento neste repositório. Atualizado em 22/09/2026.
+Documento de referência para desenvolvimento neste repositório. Atualizado em 24/09/2026.
 
 ## Sobre o escritório
 
@@ -109,6 +109,19 @@ A loja hoje não tem mais nenhum contato com o banco do Hub. `sync-produtos` gra
    2. Depois de corrigido o Hub, o envio passou a dar 401: o `SYNC_SECRET` salvo no projeto da loja (Shop) tinha só 15 caracteres, um valor errado, diferente do gerado nesta sessão. Corrigido para o valor certo (64 caracteres hex) nos dois lados
 
    Confirmado com o primeiro envio real completo: **92 enviados, 92 atualizados, 0 criados, 0 erros.** O botão "Enviar para Casa Gama" está funcionando de ponta a ponta pela primeira vez.
+
+   **Cadastro automático de produto novo a partir da nota fiscal, anexando o PDF no Claude (24/09/2026)**: novo processo validado, fora do Lovable. Em vez de digitar item por item no Hub, a nota fiscal do fornecedor (PDF) é anexada direto na conversa com o Claude Code. O Claude:
+   - Lê o PDF (todas as páginas) e extrai cabeçalho (fornecedor, número da nota, frete total) e cada item (código do fornecedor, descrição, quantidade, valor unitário, IPI, ICMS)
+   - Consulta a lista de códigos internos já usados (tela `/casa-gama/produtos` do Hub, relatada por print) para não repetir código nem miolo de contagem
+   - Atribui o próximo código disponível por categoria, no padrão `CG-XX-###` (XX = prefixo da categoria, ### sempre avança, nunca reaproveita número pulado)
+   - Calcula custo e preço sugerido pela mesma fórmula já confirmada acima (frete rateado por valor, custo mínimo, margem, arredondamento só de centavos), só para conferência, sem gravar nada ainda
+   - Monta um único prompt pronto para colar no Hub, criando de uma vez a nota fiscal e todos os produtos novos com seus itens de nota vinculados
+
+   Item que não bate com nenhuma categoria existente fica de fora do lote (fica combinado com quem revisar se cria categoria nova ou não), assim como item que não é produto de revenda (ex: kit degustação de fragrância).
+
+   **Primeiro teste real, nota 588458 (Grupo Moas/Mart, 31/08/2026), validado em 24/09/2026**: 48 itens na nota, frete R$ 0,00. 44 viraram produto novo (4 itens de fragrância/difusor ficaram de fora, sem categoria própria ainda). Resultado no Hub, conferido pelas sócias: 44 produtos cadastrados, todos sem publicar (passam pela revisão normal), 44 itens de nota vinculados, margem de 30%, nenhum código repetido, nenhuma categoria nova precisou ser criada. Exemplo conferido: CG-EM-005, custo R$ 49,28, preço sugerido R$ 64,06, batendo exatamente com o cálculo feito antes de montar o prompt. Preço de loja desses 44 produtos fica em R$ 0,00 até serem publicados na tela de Conferência de Preços.
+
+   Pendente: decidir categoria (ex: "Perfumaria" ou "Difusores") para os 4 itens de fragrância deixados de fora, numa próxima nota.
 5. Plugar o Umami por último
 
 ### Modelo de dados mapeado (22/09/2026)
