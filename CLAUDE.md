@@ -74,7 +74,20 @@ Isso quebrava o isolamento decidido: a loja pública tinha acesso ao mesmo banco
 - Secrets antigos removidos do Casa Gama Shop (`CASAGAMA_SUPABASE_URL`, `CASAGAMA_SUPABASE_SERVICE_ROLE_KEY`, `CASAGAMA_SUPABASE_PUBLISHABLE_KEY`), não são mais usados por nenhum código
 
 A loja hoje não tem mais nenhum contato com o banco do Hub. `sync-produtos` grava no banco próprio da loja usando a chave de serviço automática do próprio projeto, sem depender de secret manual.
-4. Continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub
+4. **Em andamento em 24/09/2026**: continuar a construção do site da loja no Lovable, com o admin de produtos morando no Hub. Checklist feito contra o sistema antigo (`casa-gama-v7.html`): 5 itens já prontos (vitrine com filtro, ficha de produto, forma de pagamento com desconto, presente com mensagem, produto indisponível visível), 3 parciais, 2 ausentes na hora do checklist.
+
+   Fechado nesta sessão:
+   - Quantidade ajustável no carrinho (antes cada produto só entrava 1 vez), com limite pelo estoque disponível
+   - WhatsApp abre automaticamente ao finalizar o pedido, com botão "Copiar mensagem" como alternativa se o navegador bloquear o pop-up (decisão confirmada pelas sócias, revertendo a escolha anterior de só copiar mensagem)
+   - Botão "avisar quando disponível" em produto sem estoque, abre WhatsApp com mensagem pronta
+   - Tabela `casagama_config` (linha única) no banco próprio da loja: WhatsApp e chave PIX já preenchidos e em uso pelo site; Instagram, textos, horário e localização com campo pronto, ainda sem lugar na tela que mostre (não é bug, só não foi pedido ainda)
+   - Limpeza: 3 secrets órfãos removidos do Casa Gama Shop (`CASAGAMA_SUPABASE_URL`, `CASAGAMA_SUPABASE_PUBLISHABLE_KEY`, `CASAGAMA_SUPABASE_SERVICE_ROLE_KEY`), confirmado zero referência no código antes de apagar
+   - Estoque de teste restaurado no Hub: CG-PR-004 e CG-BD-001 de volta aos valores originais
+   - Bug corrigido no Hub: o botão "Enviar para Casa Gama" nascia com contagem 0 e desativado, porque a marcação "publicado na loja" vinha desligada para os ~92 produtos já cadastrados antes dessa marcação existir. Corrigido com um backfill único marcando os 92 existentes como publicados; produto novo continua nascendo com a marcação desligada, passando pela revisão normal
+
+   Não considerado bug, decisão de marca já registrada no projeto: paleta usa musgo/oliva como cor principal e terracota só como destaque, diferente do sistema antigo que usava terracota como cor principal
+
+   Pendente: teste manual real de finalização de pedido pelo celular, para confirmar que o WhatsApp abre certinho no navegador de verdade (não dá pra confirmar isso de forma automatizada sem mexer em estoque real)
 5. Plugar o Umami por último
 
 ### Modelo de dados mapeado (22/09/2026)
