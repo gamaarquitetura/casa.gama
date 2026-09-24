@@ -87,6 +87,8 @@ A loja hoje não tem mais nenhum contato com o banco do Hub. `sync-produtos` gra
 
    Não considerado bug, decisão de marca já registrada no projeto: paleta usa musgo/oliva como cor principal e terracota só como destaque, diferente do sistema antigo que usava terracota como cor principal
 
+   **Decisão de filtro da vitrine (24/09/2026)**: diferente do sistema antigo (que misturava disponível e indisponível em toda tela). Aba "Todos" mostra só produtos disponíveis. Dentro de cada categoria específica (Bandejas, Caixas, etc.), disponíveis e indisponíveis aparecem juntos, indisponível com badge e botão "Avisar-me". Contador "X peças · Y disponíveis" se ajusta: em "Todos", X = Y (só disponíveis); dentro de categoria, X = total da categoria, Y = só disponíveis dela.
+
    **Teste manual real do WhatsApp, feito pelas sócias (24/09/2026): bem-sucedido.** Pedido real com CG-BD-001 pelo site publicado, WhatsApp abriu certinho no navegador.
 
    **URL publicada da loja**: `https://casa-gama-charm.lovable.app`
