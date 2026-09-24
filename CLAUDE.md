@@ -87,7 +87,15 @@ A loja hoje não tem mais nenhum contato com o banco do Hub. `sync-produtos` gra
 
    Não considerado bug, decisão de marca já registrada no projeto: paleta usa musgo/oliva como cor principal e terracota só como destaque, diferente do sistema antigo que usava terracota como cor principal
 
-   Pendente: teste manual real de finalização de pedido pelo celular, para confirmar que o WhatsApp abre certinho no navegador de verdade (não dá pra confirmar isso de forma automatizada sem mexer em estoque real)
+   **Teste manual real do WhatsApp, feito pelas sócias (24/09/2026): bem-sucedido.** Pedido real com CG-BD-001 pelo site publicado, WhatsApp abriu certinho no navegador.
+
+   **URL publicada da loja**: `https://casa-gama-charm.lovable.app`
+
+   **Saga de depuração do botão "Enviar para Casa Gama" (24/09/2026)**: depois do teste real acima, o botão passou a falhar em cadeia, por dois problemas distintos e sucessivos:
+   1. `CASA_GAMA_SYNC_URL` e `CASA_GAMA_SYNC_SECRET` (secrets do Hub) tinham sido trocados de campo ao salvar: a URL continha um texto curto sem formato de URL. Corrigido com os valores certos (URL confirmada de novo com o Shop, senha reconfirmada)
+   2. Depois de corrigido o Hub, o envio passou a dar 401: o `SYNC_SECRET` salvo no projeto da loja (Shop) tinha só 15 caracteres, um valor errado, diferente do gerado nesta sessão. Corrigido para o valor certo (64 caracteres hex) nos dois lados
+
+   Confirmado com o primeiro envio real completo: **92 enviados, 92 atualizados, 0 criados, 0 erros.** O botão "Enviar para Casa Gama" está funcionando de ponta a ponta pela primeira vez.
 5. Plugar o Umami por último
 
 ### Modelo de dados mapeado (22/09/2026)
